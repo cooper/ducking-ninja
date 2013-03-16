@@ -68,24 +68,33 @@ sub handle_request {
     return &HTTP_NOT_FOUND if $api_version != 2.0;
     $api_prefix = 2;
     
-    # if the ServerManager has a method for this, use it.
-    if (my $code = DuckingNinja::ServerManager->can("http_${api_prefix}_${page_name}")) {
-        my %postVariables = $r->variable('postVariables') ? %{$r->variable('postVariables')} : ();
-
-        # apply a few other artificial variables.        
-        $postVariables{_clientIP} = $r->remote_addr;
-        $postVariables{_recvTime} = time;
-
-        # call it.
-        $code->(%postVariables);
-        # TODO: do stuff here.
-        return &OK;
-        
+    # server manager does not handle this...
+    if (!DuckingNinja::ServerManager::has_page($page_name, $api_prefix)) {
+        return &HTTP_NOT_FOUND;
     }
     
-    # otherwise, we will say it's not found.
-    return &HTTP_NOT_FOUND;
-    
+    my %postVariables = $r->variable('postVariables') ? %{$r->variable('postVariables')} : ();
+
+    # apply a few other artificial variables.        
+    $postVariables{_clientIP} = $r->remote_addr;
+    $postVariables{_recvTime} = time;
+
+    # call it the handler.
+    my %return = DuckingNinja::ServerManager::page_for(
+        $page_name, $api_prefix, %postVariables
+    ) or return &HTTP_NOT_FOUND;
+
+    # send Content-Type. defaults to text/plain.
+    $r->send_http_header($return{contentType});
+
+    # if a body is specified, print it.
+    if (defined $return{body} && length $return{body}) {
+        $r->print($return{body});
+    }
+
+    # status defaults to HTTP 200 OK.
+    return $return{statusCode};
+
 }
 
 1
