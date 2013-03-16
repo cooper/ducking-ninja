@@ -55,7 +55,7 @@ sub handle_post_variables {
 
 # handle a POST request.
 sub handle_request {
-    sub $r = shift;
+    my $r = shift;
     
     # by now hasPostVariables and postVariables are set if necessary to this request
     
