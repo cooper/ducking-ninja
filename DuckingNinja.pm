@@ -10,7 +10,7 @@ use utf8;
 use lib 'evented-object';
 use EventedObject;
 use lib 'evented-configuration';
-use EventedConfiguration;
+use Evented::Configuration;
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
@@ -23,7 +23,7 @@ sub conf { $conf->get(@_) }
 sub start {
     
     # load the configuration.
-    $conf = EventedConfiguration->new(conffile => "$gitdir/etc/duckingninja.conf");
+    $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
 }
 
 1
