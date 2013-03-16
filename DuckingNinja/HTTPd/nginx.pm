@@ -24,10 +24,10 @@ sub handler {
     my $r = shift;
 
     # we only accept POST requests.
-    return DECLINED if $r->request_method ne 'POST';
+    return &DECLINED if $r->request_method ne 'POST';
     
     # call with POST variables if the request has a body.
-    return OK if $r->has_request_body(\&handle_post_variables);
+    return &OK if $r->has_request_body(\&handle_post_variables);
     
     # if not, handle the request without POST variables.
     return handle_request($r);
@@ -67,7 +67,7 @@ sub handle_request {
     }
 
     # currently only API version 2.0 is supported.
-    return HTTP_NOT_FOUND if $api_version != 2.0;
+    return &HTTP_NOT_FOUND if $api_version != 2.0;
     $api_prefix = 2;
     
     # if the ServerManager has a method for this, use it.
@@ -81,12 +81,12 @@ sub handle_request {
         # call it.
         $code->(%postVariables);
         # TODO: do stuff here.
-        return OK;
+        return &OK;
         
     }
     
     # otherwise, we will say it's not found.
-    return HTTP_NOT_FOUND;
+    return &HTTP_NOT_FOUND;
     
 }
 
