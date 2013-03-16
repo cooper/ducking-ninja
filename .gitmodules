@@ -1,3 +1,6 @@
 [submodule "evented-configuration"]
 	path = evented-configuration
 	url = git://github.com/cooper/evented-configuration.git
+[submodule "evented-object"]
+	path = evented-object
+	url = git://github.com/cooper/evented-object.git

@@ -1,0 +1,13 @@
+[ server ]
+
+name = 'server.example.com'
+
+[ database ]
+
+format   = 'mysql'
+server   = 'sql-server.example.com'
+user     = 'somesqluser'
+password = 's3cure'
+database = 'some_db_for_duckingninja'
+
+table_servers = 'servers'
