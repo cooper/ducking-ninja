@@ -1,6 +1,28 @@
 # ducking-ninja: A flexible, secure, synchronized statistic server
 # Copyright (c) 2013, Mitchell Cooper
-# This file
+# This file should be loaded by the server module.
+# 
+# Artificial post variables set by the HTTPd:
+#   
+#   _clientIP: string IP address of the requesting client.
+#   _recvTime: UNIX timestamp at which the request was received.
+# 
+# Values returned by HTTP page handlers in the ServerManager:
+#   
+#   contentType: a MIME type for the content of the reply's body; default: text/plain.
+#   body:        the content body in the format of contentType or none if there is no body.
+#   statusCode:  an nginx constant HTTP status reply code; default HTTP 200 OK.
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 package DuckingNinja;
 
 use warnings;

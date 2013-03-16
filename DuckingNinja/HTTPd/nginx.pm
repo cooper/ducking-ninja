@@ -8,6 +8,8 @@ use strict;
 use utf8;
 
 use nginx;
+use URI;
+use URI::Encode qw(uri_encode uri_decode);
 use DuckingNinja;
 
 # imports with the git directory.
