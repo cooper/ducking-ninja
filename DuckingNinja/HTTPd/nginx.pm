@@ -10,12 +10,10 @@ use utf8;
 use nginx;
 use DuckingNinja;
 
-DuckingNinja::start();
-
 # imports with the git directory.
 sub import {
     my ($class, $dir) = @_;
-    $DuckingNinja::gitdir = $dir;
+    DuckingNinja::start($dir);
 }
 
 # handle a request from nginx.

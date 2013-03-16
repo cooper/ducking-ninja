@@ -21,6 +21,7 @@ sub conf { $conf->get(@_) }
 
 # called immediately as the server starts.
 sub start {
+    $gitdir = shift;
     
     # load the configuration.
     $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
