@@ -27,7 +27,9 @@ sub handler {
     return &DECLINED if $r->request_method ne 'POST';
     
     # call with POST variables if the request has a body.
-    return &OK if $r->has_request_body(\&handle_post_variables);
+    if ($r->has_request_body(\&handle_post_variables)) {
+        return handle_request($r);
+    }
     
     # if not, handle the request without POST variables.
     return handle_request($r);
@@ -49,7 +51,7 @@ sub handle_post_variables {
     $r->variable('postVariables', \%args);
     
     # finish handling the request.
-    return handle_request($r);
+    return &OK;
     
 }
 
