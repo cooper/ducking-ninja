@@ -71,12 +71,12 @@ sub handle_request {
     $api_prefix = 2;
     
     # if the ServerManager has a method for this, use it.
-    if (my $code = Numingle::ServerManager->can("http_${api_prefix}_${page_name}")) {
+    if (my $code = DuckingNinja::ServerManager->can("http_${api_prefix}_${page_name}")) {
         my %postVariables = $r->variable('postVariables') ? %{$r->variable('postVariables')} : ();
 
         # apply a few other artificial variables.        
-        $args{_clientIP} = $r->remote_addr;
-        $args{_recvTime} = time;
+        $postVariables{_clientIP} = $r->remote_addr;
+        $postVariables{_recvTime} = time;
 
         # call it.
         $code->(%postVariables);
