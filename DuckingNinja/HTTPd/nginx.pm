@@ -91,7 +91,11 @@ sub handle_request {
     # send Content-Type. defaults to text/plain.
     $r->send_http_header($return{contentType});
     
-    # TODO: only send header if only header was requested.
+    # only send header if so requested.
+    return $return{statusCode} if $r->header_only;
+
+
+    # BODY
 
     # if a body is specified, print it.
     if (defined $return{body} && length $return{body}) {
