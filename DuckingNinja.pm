@@ -74,6 +74,10 @@ sub _init_config {
 sub _init_database {
 
     if (!defined conf('database', 'format')) {
+    my $string = '';
+        foreach my $key (keys %{$conf->{conf}{section}{database}}) {
+            $string .= $key.'='.$conf->{conf}{section}{database}{$key}.';';
+        }
         die "not defined database:format: $$conf{conffile}\n";
     }
 
