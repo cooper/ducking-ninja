@@ -56,7 +56,7 @@ sub start {
     }
     
     # set up the database.
-    _init_database(); or die "Database error: ".($! ? $! : $@)."\n";
+    _init_database() or die "Database error: ".($! ? $! : $@)."\n";
     
     
 }
