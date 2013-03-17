@@ -32,7 +32,7 @@ use utf8;
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
 
-our $gitdir = '/home/www/ducking-ninja'; # TODO: figure out a way to determine this.
+our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
 our $conf;
 sub conf { $conf->get(@_) }
 
@@ -45,7 +45,7 @@ sub start {
     require Evented::Configuration; 
 
     # load the configuration.
-    $conf   = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
+    $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
     
 }
 
