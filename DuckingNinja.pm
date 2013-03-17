@@ -78,7 +78,7 @@ sub _init_database {
         foreach my $key (keys %{$conf->{conf}{section}{database}}) {
             $string .= $key.'='.$conf->{conf}{section}{database}{$key}.';';
         }
-        die "not defined database:format: $$conf{conffile}\n";
+        die "not defined database:format: $string; $$conf{conffile}\n";
     }
 
     if (conf('database', 'format') ne 'mysql') {
