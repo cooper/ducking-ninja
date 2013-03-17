@@ -63,7 +63,7 @@ sub handle_request {
     
     # if this doesn't match, ignore it.
     my ($api_version, $page_name, $api_prefix);
-    if ($r->uri !~ m/\/api\/(.+)\/(.+)$/) {
+    if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
         $api_version = $1;
         $page_name   = $2;
     }
