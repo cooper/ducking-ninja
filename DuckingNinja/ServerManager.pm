@@ -38,6 +38,7 @@ sub page_for {
         $return{body} = JSON->new->allow_nonref->encode($return{jsonObject});
     }
 
+    return %return;
 }
 
 # request to /servers, the server load balancer.
