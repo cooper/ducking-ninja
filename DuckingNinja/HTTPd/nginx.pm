@@ -18,7 +18,7 @@ sub handler {
     my $r = shift;
 
     # we only accept POST requests.
-    return &DECLINED if $r->request_method ne 'POST';
+    return &HTTP_NOT_FOUND if $r->request_method ne 'POST';
     
     # call with POST variables if the request has a body.
     if ($r->has_request_body(\&handle_post_variables)) {
