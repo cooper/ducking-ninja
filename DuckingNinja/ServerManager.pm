@@ -25,7 +25,8 @@ sub page_for {
     return undef if ref $code ne 'CODE';
     
     # call the handler.
-    my %return = $code->(%variables) || ();
+    my @return = $code->(%variables) || ();
+    die "RETURN: @return\n";
     
     # default content-type to 'text/plain'
     $return{contentType} ||= 'text/plain';
