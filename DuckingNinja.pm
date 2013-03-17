@@ -135,7 +135,7 @@ sub select_hash_each {
 sub _db_replace {
     my $query = shift;
 
-    while ($query =~ m/\{((\w+)\}/) {
+    while ($query =~ m/\{(\w+)\}/) {
         my $table_name = conf(['database', 'tables'], $1);
         $query =~ s/\{$1\}/$table_name/;
     }
