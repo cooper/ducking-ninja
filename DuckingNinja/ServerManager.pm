@@ -25,9 +25,8 @@ sub page_for {
     return undef if ref $code ne 'CODE';
     
     # call the handler.
-    my @return = $code->(%variables) || ();
-    my %return = @return;
-    die "RETURN: @return\n";
+    my $return = $code->(%variables) || (); return if ref $return ne 'HASH';
+    my %return = %$return;
     
     # default content-type to 'text/plain'
     $return{contentType} ||= 'text/plain';
@@ -40,7 +39,8 @@ sub page_for {
         $return{body} = JSON->new->allow_nonref->encode($return{jsonObject});
     }
 
-    return %return;
+    # return as a hash reference.
+    return \%return;
 }
 
 # request to /servers, the server load balancer.
@@ -50,7 +50,7 @@ sub http_2_servers {
     
     $return{jsonObject} = ['someserver.asia', 'otherserver.net'];
     
-    return %return;
+    return \%return;
 }
 
 1

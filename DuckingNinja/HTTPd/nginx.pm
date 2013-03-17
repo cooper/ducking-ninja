@@ -84,9 +84,12 @@ sub handle_request {
     $postVariables{_recvTime} = time;
 
     # call it the handler.
-    my %return = DuckingNinja::ServerManager::page_for(
+    my $return = DuckingNinja::ServerManager::page_for(
         $page_name, $api_prefix, %postVariables
     ) or return &HTTP_NOT_FOUND;
+    
+    return if ref $return ne 'HASH';
+    my %return = %$return;
 
     # send Content-Type. defaults to text/plain.
     $r->send_http_header($return{contentType});
