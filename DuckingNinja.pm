@@ -29,6 +29,8 @@ use warnings;
 use strict;
 use utf8;
 
+use DBI;
+
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
 
