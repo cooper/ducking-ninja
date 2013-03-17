@@ -50,7 +50,7 @@ sub http_2_servers {
     
     # fetch the last-used index.
     my $last_index;
-    DuckingNina::select_hash_each('SELECT * FROM {servers} WHERE name = \'last\'', sub {
+    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE name = \'last\'', sub {
         my %row     = @_;
         $last_index = $row{index};
     });
