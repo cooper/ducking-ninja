@@ -64,7 +64,7 @@ sub _init_config {
     # if ssl:path isn't set, set it.
     # it defaults to the git directory's ssl directory.
     if (!conf(['database', 'ssl'], 'path')) {
-        $conf->{conf}{database}{ssl} = "$gitdir/ssl";
+        $conf->{conf}{section}{database}{ssl} = "$gitdir/ssl";
     }
     
     return 1;
@@ -72,14 +72,6 @@ sub _init_config {
 
 # connect to database.
 sub _init_database {
-
-    if (!defined conf('database', 'format')) {
-    my $string = '';
-        foreach my $key (keys %{$conf->{conf}{section}{database}}) {
-            $string .= $key.'='.$conf->{conf}{section}{database}{$key}.';';
-        }
-        die "not defined database:format: $string; $$conf{conffile}\n";
-    }
 
     if (conf('database', 'format') ne 'mysql') {
         # Currently only mysql is supported.
