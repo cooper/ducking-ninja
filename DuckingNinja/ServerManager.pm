@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use nginx;
+use nginx; # TODO: do not rely on nginx here.
 use JSON;
 
 # returns true if the server manager has a handler for the page.
@@ -48,9 +48,59 @@ sub http_2_servers {
     my %post = @_;
     my %return;
     
-    $return{jsonObject} = ['someserver.asia', 'otherserver.net'];
+    # fetch the last-used index.
+    my $last_index;
+    DuckingNina::select_hash_each('SELECT * FROM {servers} WHERE name = \'last\'', sub {
+        my %row     = @_;
+        $last_index = $row{index};
+    });
     
+    # couldn't fetch the last-used index.
+    if (!defined $last_index) {
+        $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
+        return \%return;
+    }
+    
+    # select the servers.
+    my @servers;
+    DuckingNinja::select_hash_each('SELECT * FROM {servers}', sub {
+        my %row = @_;
+        $servers[$row{index}] = $row{name};
+    });
+
+    # try using the next in line server.
+    my $index_used;
+    if (defined $servers[$last_index + 1]) {
+        $index_used = $last_index + 1;
+    }
+    
+    # try using the first server instead.
+    elsif (defined $servers[0]) {
+        $index_used = 0;
+    }
+    
+    # give up.
+    else {
+        $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
+        return \%return;
+    }
+    
+    # use the server in index_used and set the last server to that value.
+    $return{jsonObject} = [$servers[$index_used]];
+    my $success = DuckingNinja::db_do(
+        'UPDATE {servers} SET index = ? WHERE name = \'last\'',
+        $index_used
+    );
+    
+    # failed to set.
+    if (!$success) {
+        $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
+        return \%return;
+    }
+    
+    # success.
     return \%return;
+    
 }
 
 1

@@ -33,7 +33,7 @@ use DuckingNinja::ServerManager;
 use DuckingNinja::User;
 
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
-our ($conf, $db);
+our ($conf, $db, $dbh);
 sub conf { $conf->get(@_) }
 
 # called immediately as the server starts.
@@ -92,7 +92,7 @@ sub _init_database {
     }
     
     # attempt to establish a connection.
-    $db = DBI->connect(
+    $db = $dbh = DBI->connect(
         "DBI:mysql:$database_opts;$ssl_opts",
         conf('database', 'user'),
         conf('database', 'password')
@@ -101,6 +101,46 @@ sub _init_database {
     return 1 if $db;
     return;
     
+}
+
+# run a do().
+sub db_do {
+    my ($query, @query_args) = @_;
+    return $dbh->do(_db_replace($query), undef, @query_args);
+}
+
+# selects a hash (query, query_args, code)
+sub select_hash_each {
+    my ($query, @query_args) = @_;
+    my $callback = pop @query_args;
+    return unless ref $callback eq 'CODE';
+    
+    # prepare the query.
+    my $sth = $dbh->prepare(_db_replace($query));
+    
+    # execute the query with the supplied arguments.
+    $sth->execute(@query_args);
+    
+    # execute the callback for each row.
+    while (my $row = $sth->fetchrow_hashref) {
+        $callback->(%$row);
+    }
+    
+    # finish the statement.
+    $sth->finish();
+    
+}
+
+# replace {table} with the table name from configuration.
+sub _db_replace {
+    my $query = shift;
+
+    while ($query =~ m/\{((\w+)\}/) {
+        my $table_name = conf(['database', 'tables'], $1);
+        $query =~ s/\{$1\}/$table_name/;
+    }
+    
+    return $query;
 }
 
 # returns a user based on a hash of post variables.

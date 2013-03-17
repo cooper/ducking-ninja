@@ -88,7 +88,8 @@ sub handle_request {
         $page_name, $api_prefix, %postVariables
     ) or return &HTTP_NOT_FOUND;
     
-    return if ref $return ne 'HASH';
+    # must return a hash reference.
+    return &HTTP_INTERNAL_SERVER_ERROR if ref $return ne 'HASH';
     my %return = %$return;
 
     # send Content-Type. defaults to text/plain.
