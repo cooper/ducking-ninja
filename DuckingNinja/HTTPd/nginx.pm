@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use nginx;
+use Nginx;
 use URI;
 use URI::Encode qw(uri_encode uri_decode);
 use DuckingNinja;
@@ -90,6 +90,8 @@ sub handle_request {
 
     # send Content-Type. defaults to text/plain.
     $r->send_http_header($return{contentType});
+    
+    # TODO: only send header if only header was requested.
 
     # if a body is specified, print it.
     if (defined $return{body} && length $return{body}) {

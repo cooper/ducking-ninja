@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use nginx;
+use Nginx;
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
