@@ -47,7 +47,7 @@ sub start {
 
     # load the configuration.
     $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
-    $conf->parse() or die "could not parse configuration: $$conf{conffile}\n";
+    $conf->parse_config() or die "could not parse configuration: $$conf{conffile}\n";
     
     # if ssl:path isn't set, set it.
     # it defaults to the git directory's ssl directory.
