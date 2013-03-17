@@ -32,20 +32,22 @@ use utf8;
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
 
-our $gitdir; # set by HTTPd or host.
+our $gitdir = ''; # set by HTTPd or host.
 our $conf;
 sub conf { $conf->get(@_) }
 
 # called immediately as the server starts.
 sub start {
 
+    # load the configuration.
+    $conf   = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
+    $gitdir = conf(['server', 'gitdir']); 
+
     # add $git_dir to @INC and load the required modules.
     unshift @INC, $gitdir;
     require EventedObject;
     require Evented::Configuration;    
     
-    # load the configuration.
-    $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
 }
 
 1

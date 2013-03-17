@@ -1,6 +1,7 @@
 [ server ]
 
-name = 'server.example.com'
+gitdir = '/home/www/ducking-ninja'
+name   = 'server.example.com'
 
 [ database ]
 
