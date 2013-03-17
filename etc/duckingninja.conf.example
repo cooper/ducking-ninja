@@ -10,5 +10,18 @@ server   = 'sql-server.example.com'
 user     = 'somesqluser'
 password = 's3cure'
 database = 'some_db_for_duckingninja'
+ssl      = on
 
-table_servers = 'servers'
+[ database: ssl ]
+
+cipher = 'RC4-SHA'         # SSL cipher 
+ca     = 'ca-cert.pem'     # CA certificate file
+cert   = 'client-cert.pem' # SSL client certificate
+key    = 'client-key.pem'  # SSL client key
+# path = '/home/ssl'       # SSL files directory
+# path defaults to git directory/ssl
+
+[ database: tables ]
+
+servers  = 'servers'
+registry = 'registry'

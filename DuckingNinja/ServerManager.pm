@@ -8,6 +8,7 @@ use strict;
 use utf8;
 
 use nginx;
+use JSON;
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
@@ -31,12 +32,19 @@ sub page_for {
     
     # default return code to success.
     $return{statusCode} = &OK if !exists $return{statusCode};
+    
+    # convert jsonObject to body.
+    if (defined $return{jsonObject}) {
+        $return{body} = JSON->new->allow_nonref->encode($return{jsonObject});
+    }
 
 }
 
 # request to /servers, the server load balancer.
 sub http_2_servers {
-
+    my %return;
+    $return{jsonObject} = ['someserver.asia', 'otherserver.net'];
+    return %return;
 }
 
 1
