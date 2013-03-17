@@ -12,12 +12,6 @@ use URI;
 use URI::Encode qw(uri_encode uri_decode);
 use DuckingNinja;
 
-# imports with the git directory.
-sub import {
-    my ($class, $dir) = @_;
-    DuckingNinja::start($dir);
-}
-
 # handle a request from nginx.
 # this is the main handler for the location / on the server.
 sub handler {
