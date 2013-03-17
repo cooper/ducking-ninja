@@ -43,9 +43,7 @@ sub page_for {
 
 # request to /servers, the server load balancer.
 sub http_2_servers {
-    my %return;
-    $return{jsonObject} = ['someserver.asia', 'otherserver.net'];
-    return %return;
+    return (jsonObject => ['someserver.asia', 'otherserver.net']);
 }
 
 1
