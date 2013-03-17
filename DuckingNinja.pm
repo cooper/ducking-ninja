@@ -40,7 +40,7 @@ sub conf { $conf->get(@_) }
 sub start {
 
     # add $git_dir to @INC and load the required modules.
-    unshift @INC, $gitdir, "$gitdir/evented-object", "$gitdir/evented-configuration";
+    unshift @INC, "$gitdir/evented-object", "$gitdir/evented-configuration";
 
     require EventedObject;
     require Evented::Configuration; 
