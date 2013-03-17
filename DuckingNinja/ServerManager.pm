@@ -26,6 +26,7 @@ sub page_for {
     
     # call the handler.
     my @return = $code->(%variables) || ();
+    my %return = @return;
     die "RETURN: @return\n";
     
     # default content-type to 'text/plain'
