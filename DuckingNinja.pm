@@ -45,6 +45,18 @@ sub start {
     require EventedObject;
     require Evented::Configuration; 
 
+    # set up the configuration.
+    _init_config();
+
+    # set up the database.
+    _init_database() or die "Database error: $DBI::errstr\n";
+    
+    
+}
+
+# parse the configuration.
+sub _init_config {
+
     # load the configuration.
     $conf = Evented::Configuration->new(conffile => "$gitdir/etc/duckingninja.conf");
     $conf->parse_config() or die "could not parse configuration: $$conf{conffile}\n";
@@ -55,14 +67,16 @@ sub start {
         $conf->{conf}{database}{ssl} = "$gitdir/ssl";
     }
     
-    # set up the database.
-    _init_database() or die "Database error: $DBI::errstr\n";
-    
-    
-}
+    return 1;
+}    
 
 # connect to database.
 sub _init_database {
+
+    if (!defined conf('database', 'format')) {
+        die "not defined database:format: $$conf{conffile}\n";
+    }
+
     if (conf('database', 'format') ne 'mysql') {
         # Currently only mysql is supported.
         return;
