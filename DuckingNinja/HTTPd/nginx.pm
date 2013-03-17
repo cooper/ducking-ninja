@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use Nginx;
+use nginx;
 use URI;
 use URI::Encode qw(uri_encode uri_decode);
 use DuckingNinja;

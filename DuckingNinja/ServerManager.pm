@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use Nginx;
+use nginx;
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
@@ -24,7 +24,7 @@ sub page_for {
     return undef if ref $code ne 'CODE';
     
     # call the handler.
-    my %return = $code->(%variables);
+    my %return = $code->(%variables) || ();
     
     # default content-type to 'text/plain'
     $return{contentType} ||= 'text/plain';
