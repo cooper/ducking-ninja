@@ -69,7 +69,7 @@ sub handle_request {
     }
 
     # currently only API version 2.0 is supported.
-    return &HTTP_NOT_FOUND if $api_version != 2.0;
+    return &HTTP_INTERNAL_SERVER_ERROR if $api_version != 2.0;
     $api_prefix = 2;
     
     # server manager does not handle this...
