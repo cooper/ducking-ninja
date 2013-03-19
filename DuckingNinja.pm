@@ -66,7 +66,7 @@ sub _init_config {
     # if ssl:path isn't set, set it.
     # it defaults to the git directory's ssl directory.
     if (!conf(['database', 'ssl'], 'path')) {
-        $conf->{conf}{section}{database}{ssl} = "$gitdir/ssl";
+        $conf->{conf}{data}{ssl}{path} = "$gitdir/ssl";
     }
     
     return 1;
@@ -86,7 +86,7 @@ sub _init_database {
         conf('database', 'database'),
         conf('database', 'server'),
         conf('database', 'port'),
-        conf('database', 'ssl')
+       (conf('database', 'ssl') || 0)
     );
     
     # if SSL is enabled, set the required options.
