@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use utf8;
 
-use nginx; # TODO: do not rely on nginx here.
+use DuckingNinja::HTTPConstants;
 use JSON;
 
 # returns true if the server manager has a handler for the page.

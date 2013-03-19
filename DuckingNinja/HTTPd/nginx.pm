@@ -96,7 +96,7 @@ sub handle_request {
     $r->send_http_header($return{contentType});
     
     # only send header if so requested.
-    return $return{statusCode} if $r->header_only;
+    return _status($return{statusCode}) if $r->header_only;
 
 
     # BODY
@@ -107,8 +107,18 @@ sub handle_request {
     }
 
     # status defaults to HTTP 200 OK.
-    return $return{statusCode};
+    return _status($return{statusCode});
 
+}
+
+# convert a status code to an nginx code.
+sub _status {
+    my $code = shift;
+    return -5 if !defined $code;
+    return  0 if $code eq '_CONST_OK_';         # OK.
+    return -5 if $code eq '_CONST_DECLINED_';   # DECLINED.
+    return $code if int $code == $code;         # HTTP status code.
+    return -5;                                  # fallback.
 }
 
 1
