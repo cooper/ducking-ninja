@@ -58,6 +58,7 @@ sub http_2_servers {
     # couldn't fetch the last-used index.
     if (!defined $last_index) {
         $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
+        $return{body}       = 'could not determine server order';
         return \%return;
     }
     
@@ -95,6 +96,7 @@ sub http_2_servers {
     # failed to set.
     if (!$success) {
         $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
+        $return{body}       = 'failed to set current server';
         return \%return;
     }
     
