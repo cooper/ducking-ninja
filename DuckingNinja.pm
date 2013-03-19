@@ -96,7 +96,7 @@ sub _init_database {
         $ssl_opts = sprintf(
             '%smysql_ssl_ca_path=%s;mysql_ssl_ca_file=%s;
             mysql_ssl_client_key=%s;mysql_ssl_client_cert=%s;mysql_auto_reconnect=1',
-            ('mysql_ssl_cipher='.conf($ssl, 'cipher') || ''),
+            ('mysql_ssl_cipher='.conf($ssl, 'cipher').';' || ''),
             conf($ssl, 'path'),
             conf($ssl, 'ca'),
             conf($ssl, 'key'),
