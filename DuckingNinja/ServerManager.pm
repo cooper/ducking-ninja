@@ -88,7 +88,7 @@ sub http_2_servers {
     
     my $success = DuckingNinja::db_do(
         'UPDATE {servers} SET index = ? WHERE index = ?',
-        $index_used
+        $index_used,
         'last'
     ) or die $DBI::errstr."\n";
     
