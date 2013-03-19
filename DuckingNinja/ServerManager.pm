@@ -86,8 +86,6 @@ sub http_2_servers {
         return \%return;
     }
     
-    # use the server in index_used and set the last server to that value.
-    $return{jsonObject} = [$servers[$index_used]];
     my $success = DuckingNinja::db_do(
         'UPDATE {servers} SET index = ? WHERE name = \'last\'',
         $index_used
@@ -100,7 +98,12 @@ sub http_2_servers {
         return \%return;
     }
     
+    
     # success.
+    
+    # use the server in index_used and set the last server to that value.
+    $return{jsonObject} = [$servers[$index_used]];
+    
     return \%return;
     
 }
