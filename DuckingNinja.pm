@@ -94,9 +94,9 @@ sub _init_database {
     if (conf('database', 'ssl')) {
         my $ssl   = ['database', 'ssl'];
         $ssl_opts = sprintf(
-            'mysql_ssl_cipher=%s;mysql_ssl_ca_path=%s;mysql_ssl_ca_file=%s;
+            '%smysql_ssl_ca_path=%s;mysql_ssl_ca_file=%s;
             mysql_ssl_client_key=%s;mysql_ssl_client_cert=%s;mysql_auto_reconnect=1',
-            conf($ssl, 'cipher'),
+            ('mysql_ssl_cipher='.conf($ssl, 'cipher') || ''),
             conf($ssl, 'path'),
             conf($ssl, 'ca'),
             conf($ssl, 'key'),
