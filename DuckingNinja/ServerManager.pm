@@ -35,7 +35,7 @@ sub page_for {
     $return{statusCode} = &OK if !exists $return{statusCode};
     
     # convert jsonObject to body.
-    if (defined $return{jsonObject}) {
+    if (!defined $return{body} && defined $return{jsonObject}) {
         $return{body} = JSON->new->allow_nonref->encode($return{jsonObject});
     }
 
