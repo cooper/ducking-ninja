@@ -30,10 +30,12 @@ use strict;
 use utf8;
 
 use DBI;
+use JSON;
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
 
+our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
 our ($conf, $db, $dbh);
 sub conf { $conf->get(@_) }
@@ -161,5 +163,32 @@ sub fetch_user_from_post {
     my %post = @_;
 }
 
+#########################
+### SERVER OPERATIONS ###
+#########################
+
+
+# update server status.
+sub server_status {
+
+    # if it has not been five minutes since we updated, use the cached value.
+    if (
+        $GV{server_status}               &&
+        ref $GV{server_status} eq 'HASH' &&
+        (time - $GV{server_status}{update_time}) <= 300
+    ) {
+        return $GV{server_status};
+    }
+    
+    # otherwise, we need to request it...
+    my $data   = get('http://omegle.com/status') or return;
+    my $status = JSON->new->decode($data) or return;
+    
+    # success.
+    $status{update_time} = time;
+    $GV{server_status}   = $status;
+    
+    return $status;
+}
 
 1

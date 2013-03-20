@@ -1,0 +1,4 @@
+This directory should contain certificates and keys for connecting to a database over
+Secure Socket Layer (SSL) or Transport Layer Security (TLS).
+
+If you wish to use a different directory, set the database:ssl:path configuration option.

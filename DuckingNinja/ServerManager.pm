@@ -9,6 +9,7 @@ use utf8;
 
 use DuckingNinja::HTTPConstants;
 use JSON;
+use LWP::Simple 'get';
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
@@ -42,6 +43,10 @@ sub page_for {
     # return as a hash reference.
     return \%return;
 }
+
+################
+### HANDLERS ###
+################
 
 # request to /servers, the server load balancer.
 sub http_2_servers {
@@ -107,6 +112,44 @@ sub http_2_servers {
     
     return \%return;
     
+}
+
+# request to /welcome, the main status indicator.
+sub http_2_status {
+    my %post = @_;
+    my %return;
+    my $json = {};
+    
+    # update status if necessary.
+    # if it fails, send an error to the client.
+    my $status = DuckingNinja::server_status();
+    if (!$status) {
+        $return{jsonObject} = {
+            accepted => JSON::false,
+            error    => 'The service is currently unavailable.'
+        };
+        return \%return;
+    }
+    
+    # TODO: check if the device or IP is banned.
+    # TODO: update highest user count.
+    # TODO: update client server list.
+    # TODO: trends.
+    # TODO: stats: maxCount, totalConvos, longestConvo, averageConvo.
+    $json{popular} = []; # XXX
+    $json{clientServers} = [DuckingNinja::conf('server', 'name')]; # XXX
+    
+    # chat servers.
+    $json{servers} = $status{servers} if ref $status{servers} eq 'ARRAY';
+    
+    # user count.
+    $json{count} = $status{counts};
+    
+    # this server's name.
+    $json{server} = DuckingNinja::conf('server', 'name');
+    
+    $return{jsonObject} = $json;
+    return \%return;
 }
 
 1
