@@ -9,7 +9,6 @@ use utf8;
 
 use DuckingNinja::HTTPConstants;
 use JSON;
-use LWP::Simple 'get';
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
@@ -115,7 +114,7 @@ sub http_2_servers {
 }
 
 # request to /welcome, the main status indicator.
-sub http_2_status {
+sub http_2_welcome {
     my %post = @_;
     my %return;
     my %json = {};

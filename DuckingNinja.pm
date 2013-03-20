@@ -31,6 +31,7 @@ use utf8;
 
 use DBI;
 use JSON;
+use LWP::Simple 'get';
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
