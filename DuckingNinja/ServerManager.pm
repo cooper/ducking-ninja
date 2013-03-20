@@ -136,6 +136,7 @@ sub http_2_welcome {
     # TODO: stats: maxCount, totalConvos, longestConvo, averageConvo.
     $json{popular} = []; # XXX
     $json{clientServers} = [DuckingNinja::conf('server', 'name')]; # XXX
+    $json{accepted} = JSON::true; # XXX
     
     # chat servers.
     $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
