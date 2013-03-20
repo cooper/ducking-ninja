@@ -140,10 +140,10 @@ sub http_2_status {
     $json{clientServers} = [DuckingNinja::conf('server', 'name')]; # XXX
     
     # chat servers.
-    $json{servers} = $status{servers} if ref $status{servers} eq 'ARRAY';
+    $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
     
     # user count.
-    $json{count} = $status{counts};
+    $json{count} = $status->{counts};
     
     # this server's name.
     $json{server} = DuckingNinja::conf('server', 'name');
