@@ -116,8 +116,7 @@ sub http_2_servers {
 # request to /welcome, the main status indicator.
 sub http_2_welcome {
     my %post = @_;
-    my %return;
-    my %json = {};
+    my (%json, %return);
     
     # update status if necessary.
     # if it fails, send an error to the client.
@@ -142,7 +141,7 @@ sub http_2_welcome {
     $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
     
     # user count.
-    $json{count} = $status->{counts};
+    $json{count} = $status->{count};
     
     # this server's name.
     $json{server} = DuckingNinja::conf('server', 'name');
