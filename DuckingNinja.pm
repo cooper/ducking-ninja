@@ -185,8 +185,8 @@ sub server_status {
     my $status = JSON->new->decode($data) or return;
     
     # success.
-    $status{update_time} = time;
-    $GV{server_status}   = $status;
+    $status->{update_time} = time;
+    $GV{server_status}     = $status;
     
     return $status;
 }
