@@ -118,7 +118,7 @@ sub http_2_servers {
 sub http_2_status {
     my %post = @_;
     my %return;
-    my $json = {};
+    my %json = {};
     
     # update status if necessary.
     # if it fails, send an error to the client.
@@ -148,7 +148,7 @@ sub http_2_status {
     # this server's name.
     $json{server} = DuckingNinja::conf('server', 'name');
     
-    $return{jsonObject} = $json;
+    $return{jsonObject} = \%json;
     return \%return;
 }
 
