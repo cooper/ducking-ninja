@@ -160,7 +160,7 @@ sub http_2_welcome {
         my %row = @_;
         $user_peak = $row{peak_user_count};
     });
-    $json{maxCount} = $user_peak || 0;
+    $json{maxCount} = $user_peak + 0 || 0;
     
     # chat servers.
     $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
