@@ -161,6 +161,7 @@ sub _db_replace {
 
     while ($query =~ m/\{(\w+)\}/) {
         my $table_name = conf(['database', 'tables'], $1);
+        $table_name  ||= $1;
         $query =~ s/\{$1\}/$table_name/;
     }
     
@@ -192,6 +193,28 @@ sub server_status {
     # otherwise, we need to request it...
     my $data   = get('http://omegle.com/status') or return;
     my $status = JSON->new->decode($data) or return;
+    
+    
+    # fetch user count peak.
+    my ($peak_user_count, $peak_user_count_num) = @_;
+    DuckingNinja::select_hash_each('SELECT peak_user_count,peak_user_count_num FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
+        my %row = @_;
+        $peak_user_count = $row{peak_user_count};
+    });
+    
+    # default to zero.
+    $peak_user_count     ||= 0;
+    $peak_user_count_num ||= 0;
+    
+    # if the user count if higher than the highest, update that statistic.
+    if ($status->{count} >= $peak_user_count) {
+        DuckingNinja::db_do(
+            'INSERT INTO {statistics} (peak_user_count,peak_user_count_timestamp,peak_user_count_num) VALUES (?, ?, ?)',
+            $status->{count},
+            time,
+            $peak_user_count_num + 1
+        );
+    }
     
     # success.
     $status->{update_time} = time;

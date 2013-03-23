@@ -29,5 +29,6 @@ key    = 'client-key.pem'  # SSL client key
 
 [ database: tables ]
 
-servers  = 'servers'
-registry = 'registry'
+servers    = 'servers'
+registry   = 'registry'
+statistics = 'statistics'
