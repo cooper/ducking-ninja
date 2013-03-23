@@ -145,13 +145,20 @@ sub http_2_welcome {
     }
     
     # TODO: check if the device or IP is banned.
-    # TODO: update highest user count.
     # TODO: update client server list.
     # TODO: trends.
     # TODO: stats: maxCount, totalConvos, longestConvo, averageConvo.
     $json{popular} = []; # XXX
-    $json{clientServers} = [DuckingNinja::conf('server', 'name')]; # XXX
+
     $json{accepted} = JSON::true; # XXX
+
+    # fetch the client servers. currently, these are in no absolute order.
+    my @client_servers;
+    DuckingNinja::select_hash_each('SELECT name FROM servers ORDER BY index', sub {
+        my %row = @_;
+        push @client_servers, $row{name};
+    });
+    $json{clientServers} = \@client_servers;
     
     # peak user count.
     my $user_peak = 0;
