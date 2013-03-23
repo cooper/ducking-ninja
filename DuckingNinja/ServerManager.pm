@@ -24,9 +24,24 @@ sub page_for {
     return undef if !$code;
     return undef if ref $code ne 'CODE';
     
+    my %return;
+    
+    # if we're not connected to mySQL, send an error.
+    if (!DuckingNinja::database_connected()) {
+        my $email = DuckingNinja::conf('service', 'support_email');
+        $return{jsonObject} = {
+            accepted => JSON::false,
+            error    => 'Please report this server database error to '.$email;
+        };
+        return \%return;
+    }
+
     # call the handler.
-    my $return = $code->(%variables) || (); return if ref $return ne 'HASH';
-    my %return = %$return;
+    else {
+
+        my $return = $code->(%variables) || (); return if ref $return ne 'HASH';
+        %return = %$return;
+    }
     
     # default content-type to 'text/plain'
     $return{contentType} ||= 'text/plain';

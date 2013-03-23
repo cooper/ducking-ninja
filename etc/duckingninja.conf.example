@@ -1,3 +1,8 @@
+[ service ]
+
+name          = 'Chat Service'          # global name of the service
+support_email = 'support@rlygd.net'     # service support email
+
 [ server ]
 
 name   = 'server.example.com'
