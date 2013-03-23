@@ -27,11 +27,11 @@ sub handler {
         $api_version = $1;
         $page_name   = $2;
     }
-
+    
     # GET exception.
-    if ($r->request_method eq 'GET' &&
+    if ($r->request_method eq 'GET' && defined $page_name &&
     $page_name ~~ @DuckingNinja::ServerManager::get_exceptions) {
-        return handle_request($r);
+        return handle_request($r, $api_version, $page_name, $api_prefix);
     }
 
     # otherwise we only accept POST requests.
@@ -44,11 +44,11 @@ sub handler {
     # call with POST variables if the request has a body.
     elsif ($r->request_method eq 'POST' &&
     $r->has_request_body(\&handle_post_variables)) {
-        return handle_request($r);
+        return handle_request($r, $api_version, $page_name, $api_prefix);
     }
     
     # if not, handle the request without POST variables.
-    return handle_request($r);
+    return handle_request($r, $api_version, $page_name, $api_prefix);
         
 }
 
@@ -71,16 +71,9 @@ sub handle_post_variables {
 
 # handle a POST request.
 sub handle_request {
-    my $r = shift;
+    my ($r, $api_version, $page_name, $api_prefix) = @_;
     
     # by now hasPostVariables and postVariables are set if necessary to this request
-    
-    # if this doesn't match, ignore it.
-    my ($api_version, $page_name, $api_prefix);
-    if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
-        $api_version = $1;
-        $page_name   = $2;
-    }
 
     # currently only API version 2.0 is supported.
     return &HTTP_INTERNAL_SERVER_ERROR if $api_version != 2.0;

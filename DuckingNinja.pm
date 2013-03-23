@@ -143,7 +143,7 @@ sub select_hash_each {
     my $sth = $dbh->prepare(_db_replace($query));
     
     # execute the query with the supplied arguments.
-    $sth->execute(@query_args);
+    $sth->execute(@query_args) or return;
     
     # execute the callback for each row.
     while (my $row = $sth->fetchrow_hashref) {
