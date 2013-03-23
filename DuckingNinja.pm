@@ -199,7 +199,8 @@ sub server_status {
     my ($peak_user_count, $peak_user_count_num) = @_;
     DuckingNinja::select_hash_each('SELECT peak_user_count,peak_user_count_num FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
         my %row = @_;
-        $peak_user_count = $row{peak_user_count};
+        $peak_user_count     = $row{peak_user_count};
+        $peak_user_count_num = $row{peak_user_count_num};
     });
     
     # default to zero.
