@@ -31,7 +31,7 @@ sub page_for {
         my $email = DuckingNinja::conf('service', 'support_email');
         $return{jsonObject} = {
             accepted => JSON::false,
-            error    => 'Please report this server database error to '.$email;
+            error    => 'Please report this server database error to '.$email
         };
         return \%return;
     }
