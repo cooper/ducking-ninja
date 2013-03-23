@@ -156,6 +156,7 @@ sub http_2_welcome {
     my @client_servers;
     DuckingNinja::select_hash_each('SELECT name FROM servers ORDER BY index', sub {
         my %row = @_;
+        next if $row{name} eq 'last';
         push @client_servers, $row{name};
     });
     $json{clientServers} = \@client_servers;
