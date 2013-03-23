@@ -53,9 +53,6 @@ sub handle_post_variables {
     $r->variable('postVariables', \%args);
     %_vars = %args;
     
-    # finish handling the request.
-    return &OK;
-    
 }
 
 # handle a POST request.
