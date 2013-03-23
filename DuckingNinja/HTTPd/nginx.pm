@@ -21,15 +21,29 @@ our %_vars;
 sub handler {
     my $r = shift;
 
-    # we only accept POST requests.
-    if ($r->request_method ne 'POST') {
+    # if this doesn't match, ignore it.
+    my ($api_version, $page_name, $api_prefix);
+    if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
+        $api_version = $1;
+        $page_name   = $2;
+    }
+
+    # GET exception.
+    if ($r->request_method eq 'GET' &&
+    $page_name ~~ @DuckingNinja::ServerManager::get_exceptions) {
+        return handle_request($r);
+    }
+
+    # otherwise we only accept POST requests.
+    elsif ($r->request_method ne 'POST') {
         $r->send_http_header('text/plain');
         $r->print('This server does not server content of the requested type.');
         return &OK;
     }
     
     # call with POST variables if the request has a body.
-    if ($r->has_request_body(\&handle_post_variables)) {
+    else if ($r->request_method eq 'POST' &&
+    $r->has_request_body(\&handle_post_variables)) {
         return handle_request($r);
     }
     

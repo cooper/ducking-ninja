@@ -10,6 +10,11 @@ use utf8;
 use DuckingNinja::HTTPConstants;
 use JSON;
 
+our @get_exceptions = qw(servers); # page names that allow GET requests.
+our @ban_exceptions = qw(servers); # page names that are exempt from bans.
+our @dev_exceptions = qw(servers); # page names that do not require device
+                                   # identifiers and license keys.
+
 # returns true if the server manager has a handler for the page.
 sub has_page {
     my ($page_name, $api_prefix) = @_;
@@ -69,7 +74,7 @@ sub http_2_servers {
     
     # fetch the last-used index.
     my $last_index;
-    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE name = \'last\'', sub {
+    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `name` = \'last\'', sub {
         my %row     = @_;
         $last_index = $row{index};
     });
