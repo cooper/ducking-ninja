@@ -77,7 +77,8 @@ sub handle_request {
         return &HTTP_NOT_FOUND;
     }
     
-    my %postVariables = $r->variable('postVariables') ? %{$r->variable('postVariables')} : ();
+    my $var_test      = $r->variable('postVariables');
+    my %postVariables = $var_test && ref $var_test eq 'HASH' ? %$var_test : ();
 
     # apply a few other artificial variables.        
     $postVariables{_clientIP} = $r->remote_addr;
