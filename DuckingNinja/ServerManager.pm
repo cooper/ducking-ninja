@@ -147,7 +147,7 @@ sub http_2_welcome {
     # TODO: check if the device or IP is banned.
     # TODO: update client server list.
     # TODO: trends.
-    # TODO: stats: maxCount, totalConvos, longestConvo, averageConvo.
+    # TODO: stats: totalConvos, longestConvo, averageConvo.
     $json{popular} = []; # XXX
 
     $json{accepted} = JSON::true; # XXX
