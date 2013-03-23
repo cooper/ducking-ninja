@@ -42,7 +42,7 @@ sub handler {
     }
     
     # call with POST variables if the request has a body.
-    else if ($r->request_method eq 'POST' &&
+    elsif ($r->request_method eq 'POST' &&
     $r->has_request_body(\&handle_post_variables)) {
         return handle_request($r);
     }
