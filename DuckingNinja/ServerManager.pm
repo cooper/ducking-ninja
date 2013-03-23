@@ -153,6 +153,15 @@ sub http_2_welcome {
     $json{clientServers} = [DuckingNinja::conf('server', 'name')]; # XXX
     $json{accepted} = JSON::true; # XXX
     
+    # peak user count.
+    my $user_peak = 0;
+    DuckingNinja::select_hash_each(
+    'SELECT peak_user_count FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
+        my %row = @_;
+        $user_peak = $row{peak_user_count};
+    });
+    $json{maxCount} = $user_peak || 0;
+    
     # chat servers.
     $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
     
