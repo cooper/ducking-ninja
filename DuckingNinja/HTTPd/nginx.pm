@@ -80,8 +80,8 @@ sub handle_request {
         return &HTTP_NOT_FOUND;
     }
     
-    my %postVariables = %_args;
-    %_args            = ();
+    my %postVariables = %_vars;
+    %_vars            = ();
 
     # apply a few other artificial variables.        
     $postVariables{_clientIP} = $r->remote_addr;
