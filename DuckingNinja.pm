@@ -257,65 +257,62 @@ sub fetch_user_from_post {
     my $client_ip = $post{_clientIP};
     my $page_name = $post{_pageName};
     
-    # if this page requires device identifiers and license keys, check.
-    if (!($page_name ~~ @DuckingNinja::ServerManager::dev_exceptions)) {
+
     
-        # query for registration.
-        my %reg;
-        select_hash_each('
-        SELECT * FROM `registry`
-         WHERE `license_key`             = ?
-           AND `unique_device_id`        = ?
-           AND `unique_global_device_id` = ?',
+    # query for registration.
+    my %reg;
+    select_hash_each('
+    SELECT * FROM `registry`
+     WHERE `license_key`             = ?
+       AND `unique_device_id`        = ?
+       AND `unique_global_device_id` = ?',
+    
+    $post{licenseKey}                   || '',
+    $post{uniqueDeviceIdentifier}       || '',
+    $post{uniqueGlobalDeviceIdentifier} || '',
         
-        $post{licenseKey}                   || '',
-        $post{uniqueDeviceIdentifier}       || '',
-        $post{uniqueGlobalDeviceIdentifier} || '',
-            
-        sub {
-            %reg = @_;
-        });
+    sub {
+        %reg = @_;
+    });
+    
+    # no match was found.
+    if (!$reg{license_key}) {
+        $return{accepted}           = -1 if !($page_name ~~ @DuckingNinja::ServerManager::dev_exceptions);
+        $return{notRegistered}      = 1;
+        $return{notRegisteredError} = 'Invalid product license key.';
+        return \%return;
+    }
         
-        # no match was found.
-        if (!$reg{license_key}) {
-            $return{notRegistered}      = 1;
-            $return{notRegisteredError} = 'Invalid product license key.';
-            return \%return;
-        }
+    
         
+    # query for a ban.
+    my %ban;
+    select_hash_each('
+    SELECT * FROM `bans`
+     WHERE `license_key`             = ?
+        OR `unique_device_id`        = ?
+        OR `unique_global_device_id` = ?
+        OR `ip`                      = ?',
+        
+    $post{licenseKey},
+    $post{uniqueDeviceIdentifier},
+    $post{uniqueGlobalDeviceIdentifier},
+    $client_ip,
+        
+    sub {
+        %ban = @_;
+    });
+    
+    # a ban was found.
+    if ($ban{banned}) {
+        $return{accepted}  = -1 if !($page_name ~~ @DuckingNinja::ServerManager::ban_exceptions);
+        $return{banned}    = 1;
+        $return{banReason} = $ban{reason} || 'The server is not currently accepting requests';
+        return \%return;
     }
     
-    # if this page is not exempt from bans, check for a ban.
-    if (!($page_name ~~ @DuckingNinja::ServerManager::ban_exceptions)) {
-        
-        # query for a ban.
-        my %ban;
-        select_hash_each('
-        SELECT * FROM `bans`
-         WHERE `license_key`             = ?
-            OR `unique_device_id`        = ?
-            OR `unique_global_device_id` = ?
-            OR `ip`                      = ?',
-            
-        $post{licenseKey},
-        $post{uniqueDeviceIdentifier},
-        $post{uniqueGlobalDeviceIdentifier},
-        $client_ip,
-            
-        sub {
-            %ban = @_;
-        });
-        
-        # a ban was found.
-        if ($ban{banned}) {
-            $return{banned}    = 1;
-            $return{banReason} = $ban{reason} || 'The server is not currently accepting requests';
-            return \%return;
-        }
-        
-    }
     
-    $return{accepted} = 1;
+    $return{accepted} = $return{accepted} == -1 ? 0 : 1;
     return \%return;
 }
 
