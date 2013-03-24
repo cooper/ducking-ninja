@@ -57,7 +57,7 @@ sub page_for {
             }
             
             # user failed registration test.
-            if ($user{notRegistered}) {
+            elsif ($user{notRegistered}) {
                 $return{jsonObject} = {
                     accepted => JSON::false,
                     error    => $user{notRegisteredError}
@@ -65,10 +65,12 @@ sub page_for {
             }
             
             # other error.
-            $return{jsonObject} = {
-                accepted => JSON::false,
-                error    => 'Unknown error.'
-            };
+            else {
+                $return{jsonObject} = {
+                    accepted => JSON::false,
+                    error    => 'Unknown error.'
+                };
+            }
             
         }
 
