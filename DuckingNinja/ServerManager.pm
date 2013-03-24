@@ -262,8 +262,7 @@ sub http_2_welcome {
     
     
     
-    $json{popular} = []; # XXX
-    # TODO: trends.
+    $json{popular} = DuckingNinja::trend_groups();
 
 
 

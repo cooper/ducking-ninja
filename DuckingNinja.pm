@@ -314,4 +314,42 @@ sub fetch_user_from_post {
     return \%return;
 }
 
+#######################
+### MANAGING GROUPS ###
+#######################
+
+# creates a list of trend group hashes.
+sub trend_groups {
+    my @groups;
+    select_hash_each('SELECT * FROM {groups}', sub {
+        my %row = @_;
+        
+        # fetch group information.
+        my %group = (
+            group           => $row{name},
+            popularity      => $row{popularity},
+            display         => $row{display_title},
+            subdisplay      => $row{display_subtitle},
+            borderColor     => $row{style_border_color},
+            backgroundColor => $row{style_background_color},
+            imageURL        => $row{style_background_image},
+            fontSize        => $row{style_font_size},
+            textColor       => $row{style_text_color}
+        );
+        
+        # remove omitted values.
+        foreach my $key (keys %group) {
+            delete $group{$key} unless defined $group{$key};
+        }
+        
+        # add the group.
+        push @groups, \%group;
+        
+    });
+    
+    # return groups as an array reference for JSON encoding.
+    return \@groups;
+    
+}
+
 1
