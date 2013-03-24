@@ -48,6 +48,8 @@ sub page_for {
         my $user = DuckingNinja::fetch_user_from_post(%post); my %user = %$user;
         if (!$user{accepted}) {
         
+            $return{statusCode} = &OK; 
+        
             # user is banned.
             if ($user{banned}) {
                 $return{jsonObject} = {
@@ -72,7 +74,7 @@ sub page_for {
             return { jsonObject => {
                 accepted => JSON::false,
                 error    => 'Unknown error.'
-            } };
+            }, statusCode => &OK };
             
         }
 
