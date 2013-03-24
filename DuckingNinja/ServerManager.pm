@@ -151,7 +151,7 @@ sub http_2_servers {
         'UPDATE {servers} SET `index` = ? WHERE `name` = ?',
         $index_used,
         'last'
-    ) or die $DBI::errstr."\n";
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     # failed to set.
     if (!$success) {
@@ -238,6 +238,20 @@ sub http_2_welcome {
         # it's valid.
         $json{registeredSuccessfully} = JSON::true;
         $json{licenseKey} = DuckingNinja::Private::generate_license_key(%post);
+        DuckingNinja::db_do('
+            INSERT INTO {registry} (
+                license_key,
+                unique_device_id,
+                unique_global_device_id,
+                ip,
+                time
+            ) VALUES (?, ?, ?, ?, ?, ?)',
+            $json{licenseKey},
+            $post{uniqueDeviceIdentifier},
+            $post{uniqueGlobalDeviceIdentifier},
+            $post{_clientIP},
+            time
+        ) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     }
     
@@ -262,7 +276,7 @@ sub http_2_welcome {
         my %row = @_;
         return if $row{name} eq 'last';
         push @client_servers, $row{name};
-    });
+    }) or return &HTTP_INTERNAL_SERVER_ERROR;
     $json{clientServers} = \@client_servers;
     
     # chat servers.
@@ -283,7 +297,7 @@ sub http_2_welcome {
     'SELECT peak_user_count FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
         my %row = @_;
         $user_peak = $row{peak_user_count};
-    });
+    }) or return &HTTP_INTERNAL_SERVER_ERROR;
     $json{maxCount} = $user_peak + 0 || 0;
     
     # current user count.
