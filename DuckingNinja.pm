@@ -35,6 +35,7 @@ use LWP::Simple 'get';
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
+use DuckingNinja::Private;
 
 our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.

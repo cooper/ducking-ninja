@@ -3,3 +3,4 @@
 *.save
 *.pid
 etc/duckingninja.conf
+DuckingNinja/Private.pm

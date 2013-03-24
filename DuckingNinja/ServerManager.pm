@@ -200,6 +200,24 @@ sub http_2_welcome {
         return \%return;
     }
     
+    # if the user isn't registered and provided a registration key, attempt to register.
+    if ($post{registrationKey} && $user{notRegistered}) {
+    
+        # check if registration key is valid. if it's not, give up.
+        if (!DuckingNinja::Private::registration_key_check(%post)) {
+            $return{jsonObject} = {
+                accepted => JSON::false,
+                error    => $user{notRegisteredError}
+            };
+            return \%return;
+        }
+    
+        # it's valid.
+        $json{registeredSuccessfully} = JSON::true;
+        $json{licenseKey} = DuckingNinja::Private::generate_license_key(%post);
+    
+    }
+    
     
     
     #-- omegle status stuff --#
