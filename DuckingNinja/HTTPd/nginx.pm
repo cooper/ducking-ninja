@@ -78,7 +78,6 @@ sub handle_request {
 
         # set the arguments to the decoded POST variables.
 
-        $r->variable('postVariablesString', undef);
         %postVariables = %args;
         
     }
