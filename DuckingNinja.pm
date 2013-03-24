@@ -126,7 +126,7 @@ sub _init_database {
 
 # connect to database if not connected.
 sub database_connected {
-    if (!$db->{Active}) {
+    if (!$db->ping) {
         return _init_database();
     }
     return 1;
