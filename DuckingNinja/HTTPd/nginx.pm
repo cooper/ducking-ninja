@@ -24,9 +24,10 @@ sub handler {
     if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
         $api_version = $1;
         $page_name   = $2;
+        $api_prefix  = $api_version + 0;
         $r->variable('api_version', $api_version);
-        $r->variable('page_name', $page_name);
-        $r->variable('api_prefix', $api_prefix);
+        $r->variable('page_name',   $page_name);
+        $r->variable('api_prefix',  $api_prefix);
     }
     
     # GET exception.
