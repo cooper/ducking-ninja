@@ -280,7 +280,6 @@ sub fetch_user_from_post {
         $return{accepted}           = 0 unless $page_name ~~ @DuckingNinja::ServerManager::dev_exceptions;
         $return{notRegistered}      = 1;
         $return{notRegisteredError} = 'Invalid product license key.';
-        return \%return;
     }
         
     
@@ -308,7 +307,6 @@ sub fetch_user_from_post {
         $return{accepted}  = 0 unless $page_name ~~ @DuckingNinja::ServerManager::ban_exceptions;
         $return{banned}    = 1;
         $return{banReason} = $ban{reason} || 'The server is not currently accepting requests';
-        return \%return;
     }
     
     
