@@ -12,8 +12,8 @@ use JSON;
 
 our @get_exceptions = qw(servers); # page names that allow GET requests.
 our @ban_exceptions = qw(servers); # page names that are exempt from bans.
-our @dev_exceptions = qw(servers); # page names that do not require device
-                                   # identifiers and license keys.
+our @dev_exceptions = qw(servers welcome); # page names that do not require device
+                                           # identifiers and license keys.
 
 # returns true if the server manager has a handler for the page.
 sub has_page {
@@ -174,6 +174,37 @@ sub http_2_welcome {
     my %post = @_;
     my (%json, %return);
     
+    
+    #-- bans and registration stuff --#
+    
+    
+    # fetch the user manually.
+    my $user = DuckingNinja::fetch_user_from_post(%post); my %user = %$user;
+    
+    # if the user is banned, give up here.
+    if ($user{banned}) {
+        $return{jsonObject} = {
+            accepted => JSON::false,
+            error    => $user{banReason}
+        };
+        return \%return;
+    }
+    
+    # if there is no registration key and the user was not accepted, give up here.
+    if (!$post{registrationKey} && $user{notRegistered) {
+        $return{jsonObject} = {
+            accepted => JSON::false,
+            error    => $user{notRegisteredError}
+        };
+        return \%return;
+    }
+    
+    
+    
+    #-- omegle status stuff --#
+    
+    
+    
     # update status if necessary.
     # if it fails, send an error to the client.
     my $status = DuckingNinja::server_status();
@@ -187,11 +218,22 @@ sub http_2_welcome {
     
     # TODO: check if the device or IP is banned.
     # TODO: update client server list.
-    # TODO: trends.
-    # TODO: stats: totalConvos, longestConvo, averageConvo.
-    $json{popular} = []; # XXX
 
-    $json{accepted} = JSON::true; # XXX
+
+    
+    
+    #-- trend stuff --#
+    
+    
+    
+    $json{popular} = []; # XXX
+    # TODO: trends.
+
+
+
+    #-- server stuff --#
+    
+    
 
     # fetch the client servers. currently, these are in no absolute order.
     my @client_servers;
@@ -202,6 +244,18 @@ sub http_2_welcome {
     });
     $json{clientServers} = \@client_servers;
     
+    # chat servers.
+    $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
+    
+    # this server's name.
+    $json{server} = DuckingNinja::conf('server', 'name');
+    
+    
+    
+    #-- statistic stuff --#
+    
+    
+    
     # peak user count.
     my $user_peak = 0;
     DuckingNinja::select_hash_each(
@@ -211,16 +265,17 @@ sub http_2_welcome {
     });
     $json{maxCount} = $user_peak + 0 || 0;
     
-    # chat servers.
-    $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
-    
-    # user count.
+    # current user count.
     $json{count} = $status->{count};
     
-    # this server's name.
-    $json{server} = DuckingNinja::conf('server', 'name');
-    
+
+
+    #-- success --#
+
+
+
     $return{jsonObject} = \%json;
+    $return{accepted}   = JSON::true;
     return \%return;
 }
 
