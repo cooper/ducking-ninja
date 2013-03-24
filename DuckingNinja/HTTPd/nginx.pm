@@ -64,7 +64,7 @@ sub handle_post_variables {
 
     # set the arguments to the decoded POST variables.
     $r->variable('hasPostVariables', 1);
-    $r->variable('postVariables', \%args);
+    #$r->variable('postVariables', \%args);
     %_vars = %args;
     
 }
@@ -86,11 +86,11 @@ sub handle_request {
     
     my %postVariables = %_vars;
     %_vars            = ();
-    my $variables     = $r->variable('postVariables');
-    if ($variables && ref $variables eq 'HASH') {
-        %postVariables = %$variables;
-        $r->variable(postVariables => undef);
-    }
+    #my $variables     = $r->variable('postVariables');
+    #if ($variables && ref $variables eq 'HASH') {
+    #    %postVariables = %$variables;
+    #    $r->variable(postVariables => undef);
+    #}
 
     # apply a few other artificial variables.        
     $postVariables{_clientIP} = $r->remote_addr;
