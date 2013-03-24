@@ -191,7 +191,7 @@ sub http_2_welcome {
     }
     
     # if there is no registration key and the user was not accepted, give up here.
-    if (!$post{registrationKey} && $user{notRegistered) {
+    if (!$post{registrationKey} && $user{notRegistered}) {
         $return{jsonObject} = {
             accepted => JSON::false,
             error    => $user{notRegisteredError}
