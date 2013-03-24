@@ -241,16 +241,20 @@ sub http_2_welcome {
         DuckingNinja::db_do('
             INSERT INTO {registry} (
                 license_key,
+                registration_key,
                 unique_device_id,
                 unique_global_device_id,
                 ip,
+                server,
                 time
-            ) VALUES (?, ?, ?, ?, ?)',
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)',
             $json{licenseKey},
+            $post{registrationKey},
             $post{uniqueDeviceIdentifier},
             $post{uniqueGlobalDeviceIdentifier},
             $post{_clientIP},
-            time
+            DuckingNinja::conf('server', 'name'),
+            $post{_recvTime}
         ) or return &HTTP_INTERNAL_SERVER_ERROR;
         $user{notRegistered} = 0;
     
