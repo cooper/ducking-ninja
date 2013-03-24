@@ -42,7 +42,7 @@ sub handler {
     # call with POST variables if the request has a body.
     elsif ($r->request_method eq 'POST' &&
     $r->has_request_body(\&handle_post_variables)) {
-        return handle_request($r, $api_version, $page_name, $api_prefix);
+        return $r->variable('status') || &OK;
     }
     
     # if not, handle the request without POST variables.
@@ -55,33 +55,23 @@ sub handle_post_variables {
     my $r = shift;
 
     # set the arguments to the decoded POST variables.
-    $r->variable('hasPostVariables', 1);
-    $r->variable('postVariablesString', "http://google.com/search?".$r->request_body);
+    warn 'has post variables';
+    warn $r->variable('postVariablesString');
+    
+    # use a fake URI to determine the POST variables.
+    my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
         
+    my $status = handle_request($r, $api_version, $page_name, $api_prefix, \%args);    
+    $r->variable('status', $status);
+    
 }
 
 # handle a POST request.
 sub handle_request {
-    my ($r, $api_version, $page_name, $api_prefix) = @_;
+    my ($r, $api_version, $page_name, $api_prefix, $postVariables) = @_;
     
-    # by now hasPostVariables is set.
-    my %postVariables;
-    if ($r->variable('hasPostVariables')) {
-        warn 'has post variables';
-        warn $r->variable('postVariablesString');
-        
-        # use a fake URI to determine the POST variables.
-        my %args = URI->new($r->variable('postVariablesString'))->query_form;
-
-        # decode URI percent formats.
-        $args{$_} = uri_decode($args{$_}) foreach keys %args;
-
-        # set the arguments to the decoded POST variables.
-
-        %postVariables = %args;
-        
-    }
-
+    %postVariables = %$postVariables if $postVariables && ref $postVariables eq 'HASH';
+    
     # currently only API version 2.0 is supported.
     return &HTTP_INTERNAL_SERVER_ERROR if $api_version != 2.0;
     $api_prefix = 2;
