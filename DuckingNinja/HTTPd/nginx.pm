@@ -37,7 +37,7 @@ sub handler {
     # otherwise we only accept POST requests.
     elsif ($r->request_method ne 'POST') {
         $r->send_http_header('text/plain');
-        $r->print('This server does not server content of the requested type.');
+        $r->print('This server does not serve content of the requested type.');
         return &OK;
     }
     
