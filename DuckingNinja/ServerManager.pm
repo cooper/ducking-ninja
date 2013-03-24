@@ -48,16 +48,12 @@ sub page_for {
         my $user = DuckingNinja::fetch_user_from_post(%post); my %user = %$user;
         if (!$user{accepted}) {
         
-            $return{statusCode} = &OK; 
-        
             # user is banned.
             if ($user{banned}) {
                 $return{jsonObject} = {
                     accepted => JSON::false,
                     error    => $user{banReason}
                 };
-                
-                return \%return;
             }
             
             # user failed registration test.
@@ -66,21 +62,23 @@ sub page_for {
                     accepted => JSON::false,
                     error    => $user{notRegisteredError}
                 };
-                
-                return \%return;
             }
             
             # other error.
-            return { jsonObject => {
+            $return{jsonObject} = {
                 accepted => JSON::false,
                 error    => 'Unknown error.'
-            }, statusCode => &OK };
+            };
             
         }
 
-        # call the handler.
-        my $return = $code->(%post) || (); return if ref $return ne 'HASH';
-        %return = %$return;
+        else {
+        
+            # call the handler.
+            my $return = $code->(%post) || (); return if ref $return ne 'HASH';
+            %return = %$return;
+            
+        }
         
     }
     
