@@ -95,6 +95,7 @@ sub handle_request {
     # apply a few other artificial variables.        
     $postVariables{_clientIP} = $r->remote_addr;
     $postVariables{_recvTime} = time;
+    $postVariables{_pageName} = $page_name;
 
     # call it the handler.
     my $return = DuckingNinja::ServerManager::page_for(

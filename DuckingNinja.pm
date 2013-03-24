@@ -59,6 +59,10 @@ sub start {
     
 }
 
+##################################
+### CONFIGURATION AND DATABASE ###
+##################################
+
 # parse the configuration.
 sub _init_config {
 
@@ -155,6 +159,29 @@ sub select_hash_each {
     
 }
 
+# selects and returns a single value.
+sub select_single_value {
+    my ($query, @query_args) = @_;
+    
+    # prepare the query.
+    my $sth = $dbh->prepare(_db_replace($query));
+    
+    # execute the query with the supplied arguments.
+    $sth->execute(@query_args) or return;
+    
+    # use the first value found.
+    my $value; my $row = $sth->fetchrow_hashref;
+    foreach my $key (keys %$row) {
+        $value = $row->{$key};
+        last;
+    }
+    
+    # finish the statement.
+    $sth->finish();
+    
+    return $value;
+}
+
 # replace {table} with the table name from configuration.
 sub _db_replace {
     my $query = shift;
@@ -166,11 +193,6 @@ sub _db_replace {
     }
     
     return $query;
-}
-
-# returns a user based on a hash of post variables.
-sub fetch_user_from_post {
-    my %post = @_;
 }
 
 #########################
@@ -197,7 +219,7 @@ sub server_status {
     
     # fetch user count peak.
     my ($peak_user_count, $peak_user_count_num) = @_;
-    DuckingNinja::select_hash_each('SELECT peak_user_count,peak_user_count_num FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
+    select_hash_each('SELECT peak_user_count,peak_user_count_num FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
         my %row = @_;
         $peak_user_count     = $row{peak_user_count};
         $peak_user_count_num = $row{peak_user_count_num};
@@ -209,7 +231,7 @@ sub server_status {
     
     # if the user count if higher than the highest, update that statistic.
     if ($status->{count} >= $peak_user_count) {
-        DuckingNinja::db_do(
+        db_do(
             'INSERT INTO {statistics} (peak_user_count,peak_user_count_timestamp,peak_user_count_num) VALUES (?, ?, ?)',
             $status->{count},
             time,
@@ -222,6 +244,77 @@ sub server_status {
     $GV{server_status}     = $status;
     
     return $status;
+}
+
+######################
+### MANAGING USERS ###
+######################
+
+# returns a user based on a hash of post variables.
+sub fetch_user_from_post {
+    my %post      = @_; my %return;
+    my $client_ip = $post{_clientIP};
+    my $page_name = $post{_pageName};
+    
+    # if this page requires device identifiers and license keys, check.
+    if (!($page_name ~~ @DuckingNinja::ServerManager::dev_exceptions)) {
+    
+        # query for registration.
+        my %reg;
+        select_hash_each('
+        SELECT * FROM `registry`
+         WHERE `license_key`             = ?
+           AND `unique_device_id`        = ?
+           AND `unique_global_device_id` = ?',
+        
+        $post{licenseKey}                   || '',
+        $post{uniqueDeviceIdentifier}       || '',
+        $post{uniqueGlobalDeviceIdentifier} || '',
+            
+        sub {
+            %reg = @_;
+        });
+        
+        # no match was found.
+        if (!$reg{license_key}) {
+            $return{notRegistered}      = 1;
+            $return{notRegisteredError} = 'Invalid product license key.';
+        }
+        
+    }
+    
+    # if this page is not exempt from bans, check for a ban.
+    if (!($page_name ~~ @DuckingNinja::ServerManager::ban_exceptions)) {
+        
+        # query for a ban.
+        my %ban;
+        select_hash_each('
+        SELECT * FROM `bans`
+         WHERE `license_key`             = ?
+            OR `unique_device_id`        = ?
+            OR `unique_global_device_id` = ?
+            OR `ip`                      = ?',
+            
+        $post{licenseKey},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier},
+        $client_ip,
+            
+        sub {
+            %ban = @_;
+        });
+        
+        # a ban was found.
+        if ($ban{banned}) {
+            $return{banned}    = 1;
+            $return{banReason} = $ban{reason} || 'The server is not currently accepting requests';
+            return \%return;
+        }
+        
+    }
+    
+    $return{accepted} = 1;
+    return \%return;
 }
 
 1

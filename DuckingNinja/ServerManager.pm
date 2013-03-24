@@ -24,7 +24,7 @@ sub has_page {
 # returns the return value of a page's handler.
 # returns undef if there is no handler for the page.
 sub page_for {
-    my ($page_name, $api_prefix, %variables) = @_;
+    my ($page_name, $api_prefix, %post) = @_;
     my $code = has_page($page_name, $api_prefix);
     return undef if !$code;
     return undef if ref $code ne 'CODE';
@@ -41,11 +41,45 @@ sub page_for {
         return \%return;
     }
 
-    # call the handler.
+    # mySQL is connected.
     else {
 
-        my $return = $code->(%variables) || (); return if ref $return ne 'HASH';
+        # failed to fetch user...
+        my $user = DuckingNinja::fetch_user_from_post(%post); my %user = %$user;
+        if (!$user{accepted}) {
+        
+            # user is banned.
+            if ($user{banned}) {
+                $return{jsonObject} = {
+                    accepted => JSON::false,
+                    error    => $user{banReason}
+                };
+                
+                return \%return;
+            }
+            
+            # user failed registration test.
+            if ($user{notRegistered}) {
+                $return{jsonObject} = {
+                    accepted => JSON::false,
+                    error    => $user{notRegisteredError}
+                };
+                
+                return \%return;
+            }
+            
+            # other error.
+            return { jsonObject => {
+                accepted => JSON::false,
+                error    => 'Unknown error.'
+            } };
+            
+        }
+
+        # call the handler.
+        my $return = $code->(%post) || (); return if ref $return ne 'HASH';
         %return = %$return;
+        
     }
     
     # default content-type to 'text/plain'
