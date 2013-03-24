@@ -74,6 +74,7 @@ sub page_for {
             
         }
 
+        # fetched user successfully.
         else {
         
             # call the handler.
@@ -273,9 +274,8 @@ sub http_2_welcome {
     #-- success --#
 
 
-
+    $json{accepted}     = JSON::true;
     $return{jsonObject} = \%json;
-    $return{accepted}   = JSON::true;
     return \%return;
 }
 
