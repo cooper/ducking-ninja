@@ -279,6 +279,7 @@ sub fetch_user_from_post {
         if (!$reg{license_key}) {
             $return{notRegistered}      = 1;
             $return{notRegisteredError} = 'Invalid product license key.';
+            return \%return;
         }
         
     }
