@@ -1,7 +1,8 @@
 [ service ]
 
+roundrobin    = "chat.example.com"      # client server round robin
 name          = 'Chat Service'          # global name of the service
-support_email = 'support@rlygd.net'     # service support email
+support_email = 'support@example.com'   # service support email
 
 [ server ]
 

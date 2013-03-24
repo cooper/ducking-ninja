@@ -245,13 +245,14 @@ sub http_2_welcome {
                 unique_global_device_id,
                 ip,
                 time
-            ) VALUES (?, ?, ?, ?, ?, ?)',
+            ) VALUES (?, ?, ?, ?, ?)',
             $json{licenseKey},
             $post{uniqueDeviceIdentifier},
             $post{uniqueGlobalDeviceIdentifier},
             $post{_clientIP},
             time
         ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        $user{notRegistered} = 0;
     
     }
     
