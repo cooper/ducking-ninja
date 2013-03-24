@@ -79,6 +79,7 @@ sub handle_post_variables {
 sub handle_request {
     my ($r, $api_version, $page_name, $api_prefix, $postVariables) = @_;
     
+    my %postVariables;
     %postVariables = %$postVariables if $postVariables && ref $postVariables eq 'HASH';
     
     # currently only API version 2.0 is supported.
