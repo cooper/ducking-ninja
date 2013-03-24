@@ -56,6 +56,7 @@ sub handle_post_variables {
 
     # set the arguments to the decoded POST variables.
     $r->variable('hasPostVariables', 1);
+    $r->variable('postVariablesString', "http://google.com/search?".$r->request_body);
         
 }
 
@@ -67,13 +68,14 @@ sub handle_request {
     if ($r->variable('hasPostVariables')) {
         
         # use a fake URI to determine the POST variables.
-        my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
+        my %args = URI->new($r->variable('postVariablesString'))->query_form;
 
         # decode URI percent formats.
         $args{$_} = uri_decode($args{$_}) foreach keys %args;
 
         # set the arguments to the decoded POST variables.
         $r->variable('postVariables', \%args);
+        $r->variable('postVariablesString', undef);
         
     }
 
