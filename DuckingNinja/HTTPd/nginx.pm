@@ -14,8 +14,6 @@ use DuckingNinja;
 
 DuckingNinja::start();
 
-our %_vars;
-
 # handle a request from nginx.
 # this is the main handler for the location / on the server.
 sub handler {
@@ -64,8 +62,7 @@ sub handle_post_variables {
 
     # set the arguments to the decoded POST variables.
     $r->variable('hasPostVariables', 1);
-    #$r->variable('postVariables', \%args);
-    %_vars = %args;
+    $r->variable('postVariables', \%args);
     
 }
 
@@ -84,13 +81,12 @@ sub handle_request {
         return &HTTP_NOT_FOUND;
     }
     
-    my %postVariables = %_vars;
-    %_vars            = ();
-    #my $variables     = $r->variable('postVariables');
-    #if ($variables && ref $variables eq 'HASH') {
-    #    %postVariables = %$variables;
-    #    $r->variable(postVariables => undef);
-    #}
+    my %postVariables;
+    my $variables = $r->variable('postVariables');
+    if ($variables && ref $variables eq 'HASH') {
+        %postVariables = %$variables;
+        $r->variable(postVariables => undef);
+    }
 
     # apply a few other artificial variables.        
     $postVariables{_clientIP} = $r->remote_addr;
