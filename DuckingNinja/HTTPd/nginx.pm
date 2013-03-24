@@ -67,6 +67,8 @@ sub handle_request {
     # by now hasPostVariables is set.
     my %postVariables;
     if ($r->variable('hasPostVariables')) {
+        warn 'has post variables';
+        warn $r->variable('postVariablesString');
         
         # use a fake URI to determine the POST variables.
         my %args = URI->new($r->variable('postVariablesString'))->query_form;
