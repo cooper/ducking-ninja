@@ -176,7 +176,7 @@ sub http_2_welcome {
     my (%json, %return);
     
     
-    #-- bans and registration stuff --#
+    #-- ban stuff --#
     
     
     # fetch the user manually.
@@ -190,6 +190,29 @@ sub http_2_welcome {
         };
         return \%return;
     }
+    
+    
+    
+    #-- omegle status stuff --#
+    
+    
+    
+    # update status if necessary.
+    # if it fails, send an error to the client.
+    my $status = DuckingNinja::server_status();
+    if (!$status) {
+        $return{jsonObject} = {
+            accepted => JSON::false,
+            error    => 'The service is currently unavailable.'
+        };
+        return \%return;
+    }
+    
+    
+    
+    #-- registration stuff --#
+    
+    
     
     # if there is no registration key and the user was not accepted, give up here.
     if (!$post{registrationKey} && $user{notRegistered}) {
@@ -218,27 +241,6 @@ sub http_2_welcome {
     
     }
     
-    
-    
-    #-- omegle status stuff --#
-    
-    
-    
-    # update status if necessary.
-    # if it fails, send an error to the client.
-    my $status = DuckingNinja::server_status();
-    if (!$status) {
-        $return{jsonObject} = {
-            accepted => JSON::false,
-            error    => 'The service is currently unavailable.'
-        };
-        return \%return;
-    }
-    
-    # TODO: check if the device or IP is banned.
-    # TODO: update client server list.
-
-
     
     
     #-- trend stuff --#
