@@ -58,8 +58,6 @@ sub handle_post_variables {
     my $r = shift;
 
     # set the arguments to the decoded POST variables.
-    warn 'has post variables';
-    warn $r->variable('postVariablesString');
     
     # use a fake URI to determine the POST variables.
     my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
