@@ -24,6 +24,9 @@ sub handler {
     if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
         $api_version = $1;
         $page_name   = $2;
+        $r->variable('api_version', $api_version);
+        $r->variable('page_name', $page_name);
+        $r->variable('api_prefix', $api_prefix);
     }
     
     # GET exception.
@@ -61,6 +64,12 @@ sub handle_post_variables {
     # use a fake URI to determine the POST variables.
     my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
         
+    my ($api_version, $page_name, $api_prefix) = (
+        $r->variable('api_version'),
+        $r->variable('page_name'),
+        $r->variable('api_prefix')
+    );
+    
     my $status = handle_request($r, $api_version, $page_name, $api_prefix, \%args);    
     $r->variable('status', $status);
     
