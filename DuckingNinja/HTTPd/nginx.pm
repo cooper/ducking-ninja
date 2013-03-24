@@ -53,24 +53,29 @@ sub handler {
 # handle a request with POST variables.
 sub handle_post_variables {
     my $r = shift;
-    
-    # use a fake URI to determine the POST variables.
-    my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
-
-    # decode URI percent formats.
-    $args{$_} = uri_decode($args{$_}) foreach keys %args;
 
     # set the arguments to the decoded POST variables.
     $r->variable('hasPostVariables', 1);
-    $r->variable('postVariables', \%args);
-    
+        
 }
 
 # handle a POST request.
 sub handle_request {
     my ($r, $api_version, $page_name, $api_prefix) = @_;
     
-    # by now hasPostVariables and postVariables are set if necessary to this request
+    # by now hasPostVariables is set.
+    if ($r->variable('hasPostVariables')) {
+        
+        # use a fake URI to determine the POST variables.
+        my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
+
+        # decode URI percent formats.
+        $args{$_} = uri_decode($args{$_}) foreach keys %args;
+
+        # set the arguments to the decoded POST variables.
+        $r->variable('postVariables', \%args);
+        
+    }
 
     # currently only API version 2.0 is supported.
     return &HTTP_INTERNAL_SERVER_ERROR if $api_version != 2.0;
@@ -81,6 +86,7 @@ sub handle_request {
         return &HTTP_NOT_FOUND;
     }
     
+    # postVariables.
     my %postVariables;
     my $variables = $r->variable('postVariables');
     if ($variables && ref $variables eq 'HASH') {
