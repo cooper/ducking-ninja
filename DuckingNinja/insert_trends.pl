@@ -124,7 +124,7 @@ foreach my $group_name (keys %trends) {
         
         # otherwise, add it.
         DuckingNinja::db_do(
-            'INSERT INTO {interests} (group, interest, time) VALUES (?, ?, ?)',
+            'INSERT INTO {interests} (`group`, `interest`, `time`) VALUES (?, ?, ?)',
             $group_name,
             $interest,
             time
