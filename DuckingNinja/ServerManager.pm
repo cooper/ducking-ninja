@@ -379,8 +379,8 @@ sub http_2_start {
         INSERT INTO {conversations} (
             id,
             session_type,
-            start_time,
-            '.( defined $post{question} ? 'question' : '' ).'
+            start_time
+            '.( defined $post{question} ? ', question' : '' ).'
         ) VALUES (?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
             $unique_id,
             $post{sessionType},
