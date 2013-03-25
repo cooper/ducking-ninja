@@ -363,7 +363,7 @@ sub http_2_start {
         foreach my $group_name (@$groups_ref) {
         
             # fetch interests from group.
-            DuckingNinja::select_hash_each('SELECT * FROM {interests} WHERE group = ?', $group_name, sub {
+            DuckingNinja::select_hash_each('SELECT * FROM {interests} WHERE `group` = ?', $group_name, sub {
                 my %row = @_;
                 $groups{$group_name} ||= [];
                 push @{$groups{$group_name}}, $row{interest};
