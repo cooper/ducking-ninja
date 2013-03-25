@@ -429,6 +429,7 @@ sub http_2_start {
 # messagesReceived: number of messages received
 # duration:         client-deteremined duration
 # fate:             0 = user disconnected; 1 = stranger disconnected
+# interestsMatched: JSON array of interests that matched (if common interests)
 sub http_2_end {
     my %post = @_;
     my %return;
@@ -480,6 +481,20 @@ sub http_2_end {
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier}
     ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # insert interests matched.
+    if ($post{interestsMatched}) {
+        my $interests_ref = JSON::json_decode($post{interestsMatched});
+        if (!$interests_ref || ref $interests_ref ne 'ARRAY') {
+            $return{jsonObject} = { accepted => JSON::false, error => 'Interest encoding error.' };
+            return \%return;
+        }
+        DuckingNinja::db_do(
+            'INSERT INTO {convo_interests} (id, interest_matched) VALUES (?, ?)',
+            $post{conversationID},
+            $_
+        ) foreach @$interests_ref;
+    }
     
     $return{jsonObject} = { accepted => JSON::true };
     return \%return;
