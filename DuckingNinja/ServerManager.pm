@@ -473,7 +473,8 @@ sub http_2_end {
         `server_duration`   = ?,
         `fate`              = ?
         WHERE `id` = ?
-    ', @arguments, $post{conversationID});
+    ', @arguments, $post{conversationID})
+    or return &HTTP_INTERNAL_SERVER_ERROR;
     
     $return{jsonObject} = { accepted => JSON::true };
     return \%return;
