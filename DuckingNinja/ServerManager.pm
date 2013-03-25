@@ -460,8 +460,7 @@ sub http_2_end {
         $post{fate}
     );
     DuckingNinja::db_do(
-       'UPDATE {conversations} SET
-        `omegle_id` = ?,
+       'UPDATE {conversations} SET `omegle_id` = ?,
         `omegle_server` = ?,
         `found_stranger` = ?,
         `found_time` = ?,
