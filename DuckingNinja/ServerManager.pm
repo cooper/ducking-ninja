@@ -262,13 +262,19 @@ sub http_2_welcome {
     
     
     
-    #-- trend stuff --#
+    #-- trend stuff and welcome message --#
     
     
     
     $json{popular} = DuckingNinja::trend_groups();
 
-
+    my $welcome_message;
+    DuckingNinja::select_hash_each(
+        'SELECT `message` FROM {welcome} ORDER BY `time` DESC LIMIT 1',
+        sub { my %row = @_; $welcome_message = $row{message} }
+    );
+    
+    $json{welcomeMessage} = $welcome_message if defined $welcome_message;
 
     #-- server stuff --#
     
