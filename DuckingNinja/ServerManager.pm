@@ -385,7 +385,7 @@ sub http_2_start {
             unique_global_device_id,
             start_time
             '.( defined $post{question} ? ', question' : '' ).'
-        ) VALUES (?, ?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
+        ) VALUES (?, ?, ?, ?, ?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
             $unique_id,
             $post{sessionType},
             DuckingNinja::conf('server', 'name'),
