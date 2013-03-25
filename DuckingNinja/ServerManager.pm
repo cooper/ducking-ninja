@@ -307,12 +307,106 @@ sub http_2_welcome {
     # current user count.
     $json{count} = $status->{count};
     
+    # TODO: totalConvos, longestConvo, averageConvo.
+    
 
 
     #-- success --#
 
 
     $json{accepted}     = JSON::true;
+    $return{jsonObject} = \%json;
+    return \%return;
+}
+
+# request to /start.
+# licenseKey, unqiqueDeviceIdentifier, uniqueGlobalDeviceIdentifier
+# sessionType:  NSStringFromNewOmegleSessionType() of session type
+# interests:    JSON-encoded array of standalone interests
+# groups:       JSON-encoded array of interest group names
+# question:     the question being used if the session type is ask (answer will be at end)
+sub http_2_start {
+    my %post = @_;
+    my (%return, %json);
+    
+    # check for required parameters.
+    if (!defined $post{sessionType}) {
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # generate a unique conversation identifier.
+    my $unique_id = DuckingNinja::Private::generate_session_identifier(%post);
+    $json{uniqueConversationIdentifier} = $unique_id;
+    
+    my (%groups, @interests, @finalized_interests);
+    
+    # determine standalone interests.
+    if (defined $post{interests}) {
+        my $interests_ref = JSON::decode_json($post{interests});
+        if (!$interests_ref || ref $interests_ref ne 'ARRAY') {
+            $return{jsonObject} = { accepted => JSON::false, error => 'Group encoding error.' };
+            return \%return;
+        }
+        push @interests, @$interests_ref;
+    }
+    
+    # determine interest groups.
+    if (defined $post{groups}) {
+        my $groups_ref = JSON::decode_json($post{groups});
+        if (!$groups_ref || ref $groups_ref ne 'ARRAY') {
+            $return{jsonObject} = { accepted => JSON::false, error => 'Group encoding error.' };
+            return \%return;
+        }
+        
+        # for each group, select the interests.
+        foreach my $group (@$groups_ref) {
+        
+            # fetch interests from group.
+            DuckingNinja::select_hash_each('SELECT * FROM {interests} WHERE group = ?', $group_name, sub {
+                my %row = @_;
+                $groups{$group_name} ||= [];
+                push @{$groups{$group_name}}, $row{interest};
+                push @finalized_interests, $row{interest};
+            });
+            
+        }
+
+    }
+
+    # insert into database.
+    DuckingNinja::db_do('
+        INSERT INTO {conversations} (
+            id,
+            session_type,
+            start_time,
+            question
+        ) VALUES (?, ?, ?, ?)',
+            $unique_id,
+            $post{sessionType},
+            $post{_recvTime},
+            $post{question}
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # insert groups.
+    DuckingNinja::db_do(
+        'INSERT INTO {convo_interests} (id, group_supplied) VALUES(?, ?)',
+        $unique_id,
+        $_
+    ) foreach keys %groups;
+    
+    # insert interests.
+    DuckingNinja::db_do(
+        'INSERT INTO {convo_interests} (id, interest_supplied) VALUES(?, ?)',
+        $unique_id,
+        $_
+    ) foreach @finalized_interests;
+    
+    # set return values.
+    $json{interests}    = \@interests if scalar @interests;
+    $json{groups}       = \%groups    if scalar keys %groups;
+    $json{accepted}     = JSON::true;
+    
     $return{jsonObject} = \%json;
     return \%return;
 }
