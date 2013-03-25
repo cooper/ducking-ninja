@@ -53,17 +53,18 @@ foreach my $group_name (keys %trends) {
     if (!$group_exists) {
     
         # required columns.
-        my $query = 'INSERT INTO {groups} (name, popularity, display_title';
+        my $query = 'INSERT INTO {groups} (`name`, `popularity`, `display_title`';
         
         # add optional columns if they are present.     
-        $query   .= ', display_subtitle'        if defined $group{subdisplay};
-        $query   .= ', style_border_color'      if defined $group{borderColor};
-        $query   .= ', style_background_color'  if defined $group{backgroundColor};
-        $query   .= ', style_background_image'  if defined $group{imageURL};
-        $query   .= ', style_font_size'         if defined $group{fontSize};
+        $query   .= ', `display_subtitle`'        if defined $group{subdisplay};
+        $query   .= ', `style_border_color`'      if defined $group{borderColor};
+        $query   .= ', `style_background_color`'  if defined $group{backgroundColor};
+        $query   .= ', `style_background_image`'  if defined $group{imageURL};
+        $query   .= ', `style_font_size`'         if defined $group{fontSize};
+        $query   .= ', `style_text_color`'        if defined $group{textColor};
         
         # current timestamp.
-        $query   .= ', create_time)';
+        $query   .= ', `create_time`)';
         
         # required values.
         $query   .= 'VALUES (?, ?, ?';
@@ -95,6 +96,7 @@ foreach my $group_name (keys %trends) {
         $query   .= ', `style_background_color` = ?'    if defined $group{backgroundColor};
         $query   .= ', `style_background_image` = ?'    if defined $group{imageURL};
         $query   .= ', `style_font_size`        = ?'    if defined $group{fontSize};
+        $query   .= ', `style_text_color`       = ?'    if defined $group{textColor};
         
         # current timestamp.
         $query .= ', `create_time` = ?';
@@ -122,7 +124,10 @@ foreach my $group_name (keys %trends) {
         );
         
         # if it exists, skip it.
-        next if $interest_exists;
+        if ($interest_exists) {
+            say "Skipping '$interest' in '$group_name'";
+            next;
+        }
         
         # otherwise, add it.
         DuckingNinja::db_do(
