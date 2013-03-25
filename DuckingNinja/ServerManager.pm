@@ -242,6 +242,13 @@ sub http_2_welcome {
             return \%return;
         }
     
+        # delete any former registration.
+        DuckingNinja::db_do(
+            'DELETE FROM {registry}         WHERE
+            `unique_device_id`        = ?   AND
+            `unique_global_device_id` = ?',
+        $post{uniqueDeviceIdentifier}, $post{uniqueGlobalDeviceIdentifier});
+    
         # it's valid.
         $json{registeredSuccessfully} = JSON::true;
         $json{licenseKey} = DuckingNinja::Private::generate_license_key(%post);
