@@ -381,6 +381,8 @@ sub http_2_start {
             session_type,
             server,
             ip,
+            unique_device_id,
+            unique_global_device_id,
             start_time
             '.( defined $post{question} ? ', question' : '' ).'
         ) VALUES (?, ?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
@@ -388,6 +390,8 @@ sub http_2_start {
             $post{sessionType},
             DuckingNinja::conf('server', 'name'),
             $post{_clientIP},
+            $post{uniqueDeviceIdentifier},
+            $post{uniqueGlobalDeviceIdentifier},
             $post{_recvTime},
             $post{question}
     ) or return &HTTP_INTERNAL_SERVER_ERROR;
