@@ -473,9 +473,13 @@ sub http_2_end {
         `client_duration`   = ?,
         `server_duration`   = ?,
         `fate`              = ?
-        WHERE `id` = ?
-    ', @arguments, $post{conversationID})
-    or return &HTTP_INTERNAL_SERVER_ERROR;
+        WHERE `id` = ? AND unique_device_id = ? AND unique_global_device_id = ?
+    ',
+        @arguments,
+        $post{conversationID},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier}
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     $return{jsonObject} = { accepted => JSON::true };
     return \%return;
