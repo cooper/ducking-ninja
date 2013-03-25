@@ -449,28 +449,29 @@ sub http_2_end {
         $post{omegleID},
         $post{omegleServer},
         1,
-        $post{foundTime},
+        $post{foundTime} + 0,
         $post{_recvTime}
     );
     push @arguments, $post{question} if defined $post{question};
     push @arguments, (
-        $post{messagesSent},
-        $post{messagesReceived},
-        $post{duration},
-        $post{fate}
+        $post{messagesSent}     + 0,
+        $post{messagesReceived} + 0,
+        $post{duration}         + 0,
+        $post{fate}             + 0
     );
     DuckingNinja::db_do(
-       'UPDATE {conversations} SET `omegle_id` = ?,
-        `omegle_server` = ?,
-        `found_stranger` = ?,
-        `found_time` = ?,
-        `end_time` = ?,
+       'UPDATE {conversations} SET
+        `omegle_id`         = ?,
+        `omegle_server`     = ?,
+        `found_stranger`    = ?,
+        `found_time`        = ?,
+        `end_time`          = ?,
        '.( defined $post{question} ? '`question` = ?,' : '').'
-        `messages_sent` = ?,
+        `messages_sent`     = ?,
         `messages_received` = ?,
-        `client_duration` = ?,
-        `server_duration` = ?,
-        `fate` = ?
+        `client_duration`   = ?,
+        `server_duration`   = ?,
+        `fate`              = ?
         WHERE `id` = ?
     ', @arguments, $post{conversationID})
     or return &HTTP_INTERNAL_SERVER_ERROR;
