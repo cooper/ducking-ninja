@@ -89,10 +89,12 @@ foreach my $group_name (keys %trends) {
         # required columns.
         my $query = 'UPDATE {groups} SET `name` = ?, `popularity` = ?, `display_title` = ?';
         
-        # optional columns.
-        foreach (@maybe) {
-            $query .= ', `'.$_.'` = ?' if defined $group{$_};
-        }
+        # add optional columns if they are present.     
+        $query   .= ', `display_subtitle`       = ?'    if defined $group{subdisplay};
+        $query   .= ', `style_border_color`     = ?'    if defined $group{borderColor};
+        $query   .= ', `style_background_color` = ?'    if defined $group{backgroundColor};
+        $query   .= ', `style_background_image` = ?'    if defined $group{imageURL};
+        $query   .= ', `style_font_size`        = ?'    if defined $group{fontSize};
         
         # current timestamp.
         $query .= ', `create_time` = ?';
