@@ -125,15 +125,22 @@ sub http_2_servers {
     
     # select the servers.
     my @servers;
-    DuckingNinja::select_hash_each('SELECT * FROM {servers}', sub {
+    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `enabled = 1', sub {
         my %row = @_;
+        next if $row{name} eq 'last';
         $servers[$row{index}] = $row{name};
     });
 
     # try using the next in line server.
+    # FIXME: does not work if two servers in a row are disabled.
     my $index_used;
     if (defined $servers[$last_index + 1]) {
         $index_used = $last_index + 1;
+    }
+    
+    # use even next server.
+    elsif (defined $servers[$last_index + 2]) {
+        $index_used = $last_index + 2;
     }
     
     # try using the first server instead.
