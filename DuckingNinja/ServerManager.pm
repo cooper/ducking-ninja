@@ -457,6 +457,7 @@ sub http_2_end {
         $post{messagesSent}     + 0,
         $post{messagesReceived} + 0,
         $post{duration}         + 0,
+        0, # XXX
         $post{fate}             + 0
     );
     DuckingNinja::db_do(
