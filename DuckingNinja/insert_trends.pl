@@ -19,6 +19,7 @@ my %trends = %$trends;
 use lib './DuckingNinja';
 use lib './evented-object';
 use lib './evented-configuration';
+$DuckingNinja::gitdir = '.';
 DuckingNinja::start();
 
 foreach my $group_name (keys %trends) {
