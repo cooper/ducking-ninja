@@ -17,6 +17,8 @@ my %trends = %$trends;
 # as in `perl DuckingNinja/insert_trends.pl`
 
 use lib './DuckingNinja';
+use lib './evented-object';
+use lib './evented-configuration';
 DuckingNinja::start();
 
 foreach my $group_name (keys %trends) {
