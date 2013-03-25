@@ -420,6 +420,7 @@ sub http_2_start {
 }
 
 # request to /end.
+# conversationID:   numingle conversation ID
 # omegleID:         omegle session ID
 # omegleServer:     omegle chat server
 # foundTime:        time at which stranger was found
@@ -436,6 +437,7 @@ sub http_2_end {
     my @required = qw(
         omegleID omegleServer foundTime fate
         messagesSent messagesReceived duration
+        conversationID
     ); foreach (@required) {
         next if defined $post{$_} && length $post{$_};
         $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
@@ -470,7 +472,8 @@ sub http_2_end {
         `client_duration`   = ?,
         `server_duration`   = ?,
         `fate`              = ?
-    ', @arguments);
+        WHERE `id` = ?
+    ', @arguments, $post{conversationID});
     
     $return{jsonObject} = { accepted => JSON::true };
     return \%return;
