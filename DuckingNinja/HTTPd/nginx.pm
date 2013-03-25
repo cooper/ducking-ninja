@@ -40,7 +40,7 @@ sub handler {
     elsif ($r->request_method ne 'POST') {
         $r->send_http_header('text/plain');
         $r->print('This server does not serve content of the requested type.');
-        return &OK;
+        return &HTTP_NOT_IMPLEMENTED;
     }
     
     # call with POST variables if the request has a body.
