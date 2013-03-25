@@ -64,6 +64,9 @@ sub handle_post_variables {
     # use a fake URI to determine the POST variables.
     my %args = URI->new("http://google.com/search?".$r->request_body)->query_form;
         
+    # decode.
+    $args{$_} = uri_decode($args{$_}) foreach keys %args;
+    
     my ($api_version, $page_name, $api_prefix) = (
         $r->variable('api_version'),
         $r->variable('page_name'),
