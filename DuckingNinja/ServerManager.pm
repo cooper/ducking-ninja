@@ -430,6 +430,7 @@ sub http_2_start {
 # duration:         client-deteremined duration
 # fate:             0 = user disconnected; 1 = stranger disconnected
 # interestsMatched: JSON array of interests that matched (if common interests)
+# foundStranger:    true if a stranger was ever found
 sub http_2_end {
     my %post = @_;
     my %return;
@@ -438,7 +439,7 @@ sub http_2_end {
     my @required = qw(
         omegleID omegleServer foundTime fate
         messagesSent messagesReceived duration
-        conversationID
+        conversationID foundStranger
     ); foreach (@required) {
         next if defined $post{$_} && length $post{$_};
         $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
@@ -449,8 +450,8 @@ sub http_2_end {
     my @arguments = (
         $post{omegleID},
         $post{omegleServer},
-        1,
-        $post{foundTime} + 0,
+        $post{foundStranger} + 0,
+        $post{foundTime}     + 0,
         $post{_recvTime}
     );
     push @arguments, $post{question} if defined $post{question};

@@ -57,7 +57,6 @@ sub start {
     # set up the database.
     _init_database() or die "Database error: $DBI::errstr\n";
     
-    
 }
 
 ##################################
