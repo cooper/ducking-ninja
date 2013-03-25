@@ -339,7 +339,7 @@ sub http_2_start {
     my $unique_id = DuckingNinja::Private::generate_session_identifier(%post);
     $json{uniqueConversationIdentifier} = $unique_id;
     
-    my (%groups, @interests, @finalized_interests);
+    my (%groups, @interests);#, @finalized_interests);
     
     # determine standalone interests.
     if (defined $post{interests}) {
@@ -367,7 +367,7 @@ sub http_2_start {
                 my %row = @_;
                 $groups{$group_name} ||= [];
                 push @{$groups{$group_name}}, $row{interest};
-                push @finalized_interests, $row{interest};
+                #push @finalized_interests, $row{interest};
             });
             
         }
@@ -402,7 +402,7 @@ sub http_2_start {
         'INSERT INTO {convo_interests} (id, interest_supplied) VALUES(?, ?)',
         $unique_id,
         $_
-    ) foreach @finalized_interests;
+    ) foreach @interests;
     
     # set return values.
     $json{interests}    = \@interests if scalar @interests;
