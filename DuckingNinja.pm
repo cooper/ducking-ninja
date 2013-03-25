@@ -338,7 +338,7 @@ sub trend_groups {
         
         # remove omitted values.
         foreach my $key (keys %group) {
-            delete $group{$key} unless defined $group{$key};
+            delete $group{$key} if !defined $group{$key} || !length $group{$key};
         }
         
         # add the group.
