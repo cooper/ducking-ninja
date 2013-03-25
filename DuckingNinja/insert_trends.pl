@@ -91,7 +91,7 @@ foreach my $group_name (keys %trends) {
         
         # optional columns.
         foreach (@maybe) {
-            $query .= ', `'.$_.'` = ?';
+            $query .= ', `'.$_.'` = ?' if defined $group{$_};
         }
         
         # current timestamp.
