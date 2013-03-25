@@ -379,25 +379,27 @@ sub http_2_start {
         INSERT INTO {conversations} (
             id,
             session_type,
+            server,
             ip,
             start_time
             '.( defined $post{question} ? ', question' : '' ).'
         ) VALUES (?, ?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
             $unique_id,
             $post{sessionType},
+            DuckingNinja::conf('server', 'name'),
             $post{_clientIP},
             $post{_recvTime},
             $post{question}
     ) or return &HTTP_INTERNAL_SERVER_ERROR;
     
-    # insert groups.
+    # insert interest groups.
     DuckingNinja::db_do(
         'INSERT INTO {convo_interests} (id, group_supplied) VALUES(?, ?)',
         $unique_id,
         $_
     ) foreach keys %groups;
     
-    # insert interests.
+    # insert standalone interests.
     DuckingNinja::db_do(
         'INSERT INTO {convo_interests} (id, interest_supplied) VALUES(?, ?)',
         $unique_id,
@@ -410,6 +412,63 @@ sub http_2_start {
     $json{accepted}     = JSON::true;
     
     $return{jsonObject} = \%json;
+    return \%return;
+}
+
+# request to /end.
+# omegleID:         omegle session ID
+# omegleServer:     omegle chat server
+# foundTime:        time at which stranger was found
+# question:         question (if ask/answer mode)
+# messagesSent:     number of messages sent
+# messagesReceived: number of messages received
+# duration:         client-deteremined duration
+# fate:             0 = user disconnected; 1 = stranger disconnected
+sub http_2_end {
+    my %post = @_;
+    my %return;
+    
+    # check for required parameters.
+    my @required = qw(
+        omegleID omegleServer foundTime fate
+        messagesSent messagesReceived duration
+    ); foreach (@required) {
+        next if defined $post{$_} && length $post{$_};
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # update database.
+    my @arguments = (
+        $post{omegleID},
+        $post{omegleServer},
+        1,
+        $post{foundTime},
+        $post{_recvTime}
+    );
+    push @arguments, $post{question} if defined $post{question};
+    push @arguments, (
+        $post{messagesSent},
+        $post{messagesReceived},
+        $post{duration},
+        $post{fate}
+    );
+    DuckingNinja::db_do('
+        UPDATE {conversations} SET
+        `omegle_id`         = ?,
+        `omegle_server`     = ?,
+        `found_stranger`    = ?,
+        `found_time`        = ?,
+        `end_time`          = ?,
+       '.( defined $post{question} ? '`question` = ?,' : '').'
+        `messages_sent`     = ?,
+        `messages_received` = ?,
+        `client_duration`   = ?,
+        `server_duration`   = ?,
+        `fate`              = ?
+    ', @arguments);
+    
+    $return{jsonObject} = { accepted => JSON::true };
     return \%return;
 }
 
