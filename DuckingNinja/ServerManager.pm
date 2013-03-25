@@ -484,7 +484,7 @@ sub http_2_end {
     
     # insert interests matched.
     if ($post{interestsMatched}) {
-        my $interests_ref = JSON::json_decode($post{interestsMatched});
+        my $interests_ref = JSON::decode_json($post{interestsMatched});
         if (!$interests_ref || ref $interests_ref ne 'ARRAY') {
             $return{jsonObject} = { accepted => JSON::false, error => 'Interest encoding error.' };
             return \%return;
