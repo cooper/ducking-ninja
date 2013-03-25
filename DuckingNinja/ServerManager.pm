@@ -380,8 +380,8 @@ sub http_2_start {
             id,
             session_type,
             start_time,
-            question
-        ) VALUES (?, ?, ?, ?)',
+            '.( defined $post{question} ? 'question' : '' ).'
+        ) VALUES (?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
             $unique_id,
             $post{sessionType},
             $post{_recvTime},
