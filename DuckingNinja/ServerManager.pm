@@ -461,17 +461,17 @@ sub http_2_end {
     );
     DuckingNinja::db_do(
        'UPDATE {conversations} SET
-        `omegle_id`         = ?,
-        `omegle_server`     = ?,
-        `found_stranger`    = ?,
-        `found_time`        = ?,
-        `end_time`          = ?,
+        `omegle_id` = ?,
+        `omegle_server` = ?,
+        `found_stranger` = ?,
+        `found_time` = ?,
+        `end_time` = ?,
        '.( defined $post{question} ? '`question` = ?,' : '').'
-        `messages_sent`     = ?,
+        `messages_sent` = ?,
         `messages_received` = ?,
-        `client_duration`   = ?,
-        `server_duration`   = ?,
-        `fate`              = ?
+        `client_duration` = ?,
+        `server_duration` = ?,
+        `fate` = ?
         WHERE `id` = ?
     ', @arguments, $post{conversationID})
     or return &HTTP_INTERNAL_SERVER_ERROR;
