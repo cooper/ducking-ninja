@@ -125,7 +125,7 @@ sub http_2_servers {
     
     # select the servers.
     my @servers;
-    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `enabled = 1', sub {
+    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `enabled` = 1', sub {
         my %row = @_;
         next if $row{name} eq 'last';
         $servers[$row{index}] = $row{name};
