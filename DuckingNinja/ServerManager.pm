@@ -379,11 +379,13 @@ sub http_2_start {
         INSERT INTO {conversations} (
             id,
             session_type,
+            ip,
             start_time
             '.( defined $post{question} ? ', question' : '' ).'
-        ) VALUES (?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
+        ) VALUES (?, ?, ?, ?'. ( defined $post{question} ? ', ?)' : ')' ),
             $unique_id,
             $post{sessionType},
+            $post{_clientIP},
             $post{_recvTime},
             $post{question}
     ) or return &HTTP_INTERNAL_SERVER_ERROR;
