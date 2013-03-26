@@ -60,7 +60,8 @@ sub page_for {
             elsif ($user{notRegistered}) {
                 $return{jsonObject} = {
                     accepted => JSON::false,
-                    error    => $user{notRegisteredError}
+                    error    => $user{notRegisteredError},
+                    pleaseRegisterAgain => JSON::true
                 };
             }
             
@@ -225,7 +226,8 @@ sub http_2_welcome {
     if (!$post{registrationKey} && $user{notRegistered}) {
         $return{jsonObject} = {
             accepted => JSON::false,
-            error    => $user{notRegisteredError}
+            error    => $user{notRegisteredError},
+            pleaseRegisterAgain => JSON::true
         };
         return \%return;
     }
@@ -327,7 +329,7 @@ sub http_2_welcome {
     # current user count.
     $json{count} = $status->{count};
     
-    # TODO: totalConvos, longestConvo, averageConvo.
+    # TODO: totalConvos, longestConvo, averageConvo, totalChatTime.
     
 
 
