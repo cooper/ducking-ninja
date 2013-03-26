@@ -239,7 +239,8 @@ sub http_2_welcome {
         if (!DuckingNinja::Private::registration_key_check(%post)) {
             $return{jsonObject} = {
                 accepted => JSON::false,
-                error    => 'Device registration failed.'
+                error    => 'Device registration failed.',
+                pleaseRegisterAgain => JSON::true
             };
             return \%return;
         }
