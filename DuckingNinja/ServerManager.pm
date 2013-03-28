@@ -263,14 +263,18 @@ sub http_2_welcome {
                 unique_global_device_id,
                 ip,
                 server,
+                model,
+                common_name,
                 time
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $json{licenseKey},
             $post{registrationKey},
             $post{uniqueDeviceIdentifier},
             $post{uniqueGlobalDeviceIdentifier},
             $post{_clientIP},
             DuckingNinja::conf('server', 'name'),
+            $post{modelIdentifier},
+            $post{commonName},
             $post{_recvTime}
         ) or return &HTTP_INTERNAL_SERVER_ERROR;
         $user{notRegistered} = 0;
