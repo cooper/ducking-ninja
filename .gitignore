@@ -5,7 +5,8 @@
 etc/duckingninja.conf
 private/lib/*
 private/www/*
+private/ssl/*
+!private/ssl/README
 !private/www/README
 !private/lib/README
 !private/README
-

@@ -26,7 +26,7 @@ ca     = 'ca-cert.pem'     # CA certificate file
 cert   = 'client-cert.pem' # SSL client certificate
 key    = 'client-key.pem'  # SSL client key
 # path = '/home/ssl'       # SSL files directory
-# path defaults to git directory/ssl
+# path defaults to git directory/private/ssl
 
 [ database: tables ]
 
