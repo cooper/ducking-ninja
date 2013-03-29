@@ -530,7 +530,64 @@ sub http_2_end {
 
 # request to /report.
 sub http_2_report {
+    my %post = @_;
+    my %return;
 
+    # check for required parameters.
+    my @required = qw(conversationID reason);
+    foreach (@required) {
+        next if defined $post{$_} && length $post{$_};
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # ensure that this conversation exists.
+    my $found_row = 0;
+    DuckingNinja::select_hash_each(
+    'SELECT `conversationID` FROM {conversations}
+     WHERE  `conversationID`          = ?
+     AND    `unique_device_id`        = ?
+     AND    `unique_global_device_id` = ?
+     LIMIT 1',
+        $post{conversationID},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier},
+        sub { $found_row = 1 }
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # didn't find it.
+    if (!$found_row) {
+        $return{jsonObject} = { accepted => JSON::false, error => 'Conversation invalid.' };
+        return \%return;
+    }
+    
+    # found it. go ahead and add it.
+    DuckingNinja::db_do(
+    'INSERT INTO {reports} (
+        id,
+        server,
+        ip,
+        unique_device_id,
+        unique_global_device_id,
+        reason,
+        time
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        $post{conversationID},
+        DuckingNinja::conf('server', 'name'),
+        $post{_clientIP},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier},
+        $post{reason},
+        $post{_recvTime}
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # success.
+    $return{jsonObject} = {
+        accepted => JSON::true,
+        message  => 'Your report has been submitted and is pending review.'
+    };
+    
+    return \%return;
 }
 
 1
