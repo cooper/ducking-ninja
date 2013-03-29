@@ -3,4 +3,5 @@
 *.save
 *.pid
 etc/duckingninja.conf
-DuckingNinja/Private.pm
+private/
+!private/README

@@ -528,4 +528,9 @@ sub http_2_end {
     return \%return;
 }
 
+# request to /report.
+sub http_2_report {
+
+}
+
 1
