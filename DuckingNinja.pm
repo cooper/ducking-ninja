@@ -35,7 +35,6 @@ use LWP::Simple 'get';
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
-use DuckingNinja::Private;
 
 our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
@@ -59,9 +58,11 @@ sub start {
         
     );
 
-    # require EventedObject and Evented::Configuration.
+    # require EventedObject, Evented::Configuration, and Private.
     require EventedObject;
     require Evented::Configuration; 
+    require DuckingNinja::Private;
+
 
     # set up the configuration.
     _init_config();
