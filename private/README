@@ -1,0 +1,3 @@
+This directory stores private information specific to the statistic server network.
+It may be useful to include this directory as a private git repository; however, it
+should not be publically accessible due to the necessity of security.

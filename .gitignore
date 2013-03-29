@@ -3,5 +3,5 @@
 *.save
 *.pid
 etc/duckingninja.conf
-private/
+private/*
 !private/README
