@@ -54,7 +54,7 @@ sub start {
         "$gitdir/evented-configuration",
         
         # private/
-        "$git/private/lib"
+        "$gitdir/private/lib"
         
     );
 
