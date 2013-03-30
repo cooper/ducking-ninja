@@ -543,7 +543,9 @@ sub http_2_report {
     }
     
     # must be an array ref.
-    if (ref $post{conversation} ne 'ARRAY') {
+    my $logs;
+    $logs = decode_json($post{conversation});
+    if (!$logs || ref $logs ne 'ARRAY') {
         $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
         return \%return;
     }
@@ -590,7 +592,7 @@ sub http_2_report {
     
     
     # insert the log's individual events.
-    foreach my $log (@{$post{conversation}}) {
+    foreach my $log (@$logs) {
     
         # must be an array ref.
         if (ref $log ne 'ARRAY') {
