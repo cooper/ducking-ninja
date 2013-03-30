@@ -6,6 +6,7 @@ package DuckingNinja::ServerManager;
 use warnings;
 use strict;
 use utf8;
+use feature 'switch';
 
 use DuckingNinja::HTTPConstants;
 use JSON;
@@ -128,7 +129,7 @@ sub http_2_servers {
     my @servers;
     DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `enabled` = 1', sub {
         my %row = @_;
-        next if $row{name} eq 'last';
+        return if $row{name} eq 'last';
         $servers[$row{index}] = $row{name};
     });
 
@@ -534,9 +535,15 @@ sub http_2_report {
     my %return;
 
     # check for required parameters.
-    my @required = qw(conversationID reason);
+    my @required = qw(conversationID reason conversation);
     foreach (@required) {
         next if defined $post{$_} && length $post{$_};
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # must be an array ref.
+    if (ref $post{conversation} ne 'ARRAY') {
         $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
         return \%return;
     }
@@ -562,8 +569,8 @@ sub http_2_report {
     }
     
     # found it. go ahead and add it.
-    DuckingNinja::db_do(
-    'INSERT INTO {reports} (
+    DuckingNinja::db_do('
+    INSERT INTO {reports} (
         `id`,
         `server`,
         `ip`,
@@ -580,6 +587,40 @@ sub http_2_report {
         $post{reason},
         $post{_recvTime}
     ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    
+    # insert the log's individual events.
+    foreach my $log (@$logs) {
+    
+        # must be an array ref.
+        if (ref $log ne 'ARRAY') {
+            $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+            return \%return;
+        }
+    
+        # conversation identifier and event name.
+        my @log_arguments = (
+            $post{conversationID},
+            $log->[0]
+        );
+        
+        # value.
+        push @log_arguments, $log->[1] if defined $log->[1];
+    
+        # source.
+        push @log_arguments, 'report';
+    
+        DuckingNinja::db_do('
+        INSERT INTO {convo_events} (
+            `id`,
+            `event`,
+            '.(defined $log->[1] ? '`value`,' : '').'
+            `source`
+        ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
+            @log_arguments
+        ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        
+    }
     
     # success.
     $return{jsonObject} = {
