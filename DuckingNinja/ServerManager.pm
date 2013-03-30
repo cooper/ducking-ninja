@@ -590,7 +590,7 @@ sub http_2_report {
     
     
     # insert the log's individual events.
-    foreach my $log (@$logs) {
+    foreach my $log (@{$post{conversation}}) {
     
         # must be an array ref.
         if (ref $log ne 'ARRAY') {
