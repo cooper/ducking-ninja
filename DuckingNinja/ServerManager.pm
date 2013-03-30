@@ -544,8 +544,8 @@ sub http_2_report {
     # ensure that this conversation exists.
     my $found_row = 0;
     DuckingNinja::select_hash_each(
-    'SELECT `conversationID` FROM {conversations}
-     WHERE  `conversationID`          = ?
+    'SELECT `id` FROM {conversations}
+     WHERE  `id`                      = ?
      AND    `unique_device_id`        = ?
      AND    `unique_global_device_id` = ?
      LIMIT 1',
@@ -564,13 +564,13 @@ sub http_2_report {
     # found it. go ahead and add it.
     DuckingNinja::db_do(
     'INSERT INTO {reports} (
-        id,
-        server,
-        ip,
-        unique_device_id,
-        unique_global_device_id,
-        reason,
-        time
+        `id`,
+        `server`,
+        `ip`,
+        `unique_device_id`,
+        `unique_global_device_id`,
+        `reason`,
+        `time`
     ) VALUES (?, ?, ?, ?, ?, ?, ?)',
         $post{conversationID},
         DuckingNinja::conf('server', 'name'),
