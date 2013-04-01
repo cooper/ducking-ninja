@@ -324,13 +324,18 @@ sub http_2_welcome {
     
     
     # peak user count.
-    my $user_peak = 0;
     DuckingNinja::select_hash_each(
     'SELECT peak_user_count FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
         my %row = @_;
-        $user_peak = $row{peak_user_count};
+         $json{maxCount} = $row{peak_user_count} + 0;
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
-    $json{maxCount} = $user_peak + 0 || 0;
+
+    # total conversation time.
+    DuckingNinja::select_hash_each(
+    'SELECT SUM(`client_duration`) AS `total` FROM {conversations}', sub {
+        my %row = @_;
+         $json{totalChatTime} = $row{total} + 0;
+    }) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     # current user count.
     $json{count} = $status->{count};
@@ -593,6 +598,9 @@ sub http_2_report {
     
     # insert the log's individual events.
     foreach my $log (@$logs) {
+    
+        # TODO: ensure the log type is a valid one.
+    
     
         # must be an array ref.
         if (ref $log ne 'ARRAY') {
