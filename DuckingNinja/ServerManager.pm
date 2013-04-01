@@ -330,18 +330,27 @@ sub http_2_welcome {
          $json{maxCount} = int $row{peak_user_count};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
 
-    # total conversation count, total duration, and longest duration.
+    # total conversation count and total conversation duration..
     DuckingNinja::select_hash_each(
     'SELECT
-        `client_duration`,
         SUM(`client_duration`) AS `total_time`,
         COUNT(*) AS `total_num`
-    FROM {conversations} ORDER BY `client_duration` DESC LIMIT 1', sub {
+    FROM {conversations}', sub {
         my %row = @_;
          $json{totalChatTime} = int $row{total_time};
          $json{totalConvos}   = int $row{total_num};
-         $json{longestConvo}  = int $row{client_duration};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # longest conversation.
+    DuckingNinja::select_hash_each('
+    SELECT 
+        `client_duration`
+    FROM {conversations}
+    ORDER BY `client_duration` DESC
+    LIMIT 1', sub {
+        my %row = @_;
+        $json{longestConvo} = int $row{client_duration};
+    });
     
     
     # current user count.
