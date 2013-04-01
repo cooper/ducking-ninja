@@ -335,12 +335,12 @@ sub http_2_welcome {
     'SELECT
         SUM(`client_duration`) AS `total_time`,
         COUNT(*) AS `total_num`,
-        `client_duration` AS `longest_duration`
+        `client_duration`
     FROM {conversations} ORDER BY `client_duration` DESC LIMIT 1', sub {
         my %row = @_;
          $json{totalChatTime} = int $row{total_time};
          $json{totalConvos}   = int $row{total_num};
-         $json{longestConvo}  = int $row{longest_duration};
+         $json{longestConvo}  = int $row{client_duration};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     
