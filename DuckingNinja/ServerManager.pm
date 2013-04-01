@@ -325,9 +325,9 @@ sub http_2_welcome {
     
     # peak user count.
     DuckingNinja::select_hash_each(
-    'SELECT peak_user_count FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
+    'SELECT `count` FROM {stats_peak} ORDER BY `num` DESC LIMIT 1', sub {
         my %row = @_;
-         $json{maxCount} = int $row{peak_user_count};
+         $json{maxCount} = int $row{count};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
 
     # total conversation count and total conversation duration..
