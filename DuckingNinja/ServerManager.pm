@@ -332,10 +332,12 @@ sub http_2_welcome {
 
     # total conversation time.
     DuckingNinja::select_hash_each(
-    'SELECT SUM(`client_duration`) AS `total` FROM {conversations}', sub {
+    'SELECT SUM(`client_duration`) AS `total_time`, COUNT(*) AS `total_num` FROM {conversations}', sub {
         my %row = @_;
-         $json{totalChatTime} = $row{total} + 0;
+         $json{totalChatTime} = $row{total_time} + 0;
+         $json{totalConvos}   = $row{total_num}  + 0;
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
     
     # current user count.
     $json{count} = $status->{count};
