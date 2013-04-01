@@ -327,15 +327,20 @@ sub http_2_welcome {
     DuckingNinja::select_hash_each(
     'SELECT peak_user_count FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
         my %row = @_;
-         $json{maxCount} = $row{peak_user_count} + 0;
+         $json{maxCount} = int $row{peak_user_count};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
 
-    # total conversation time.
+    # total conversation count, total duration, and longest duration.
     DuckingNinja::select_hash_each(
-    'SELECT SUM(`client_duration`) AS `total_time`, COUNT(*) AS `total_num` FROM {conversations}', sub {
+    'SELECT
+        SUM(`client_duration`) AS `total_time`,
+        COUNT(*) AS `total_num`,
+        `client_duration` AS `longest_duration`
+    FROM {conversations} ORDER BY `client_duration` DESC LIMIT 1', sub {
         my %row = @_;
-         $json{totalChatTime} = $row{total_time} + 0;
-         $json{totalConvos}   = $row{total_num}  + 0;
+         $json{totalChatTime} = int $row{total_time};
+         $json{totalConvos}   = int $row{total_num};
+         $json{longestConvo}  = int $row{longest_duration};
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
     
     
