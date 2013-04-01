@@ -333,9 +333,9 @@ sub http_2_welcome {
     # total conversation count, total duration, and longest duration.
     DuckingNinja::select_hash_each(
     'SELECT
+        `client_duration`,
         SUM(`client_duration`) AS `total_time`,
-        COUNT(*) AS `total_num`,
-        `client_duration`
+        COUNT(*) AS `total_num`
     FROM {conversations} ORDER BY `client_duration` DESC LIMIT 1', sub {
         my %row = @_;
          $json{totalChatTime} = int $row{total_time};
