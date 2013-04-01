@@ -232,10 +232,16 @@ sub server_status {
     
     # fetch user count peak.
     my ($peak_user_count, $peak_user_count_num) = @_;
-    select_hash_each('SELECT peak_user_count,peak_user_count_num FROM {statistics} ORDER BY peak_user_count_num DESC LIMIT 1', sub {
+    select_hash_each('
+        SELECT
+            `count`,
+            `num`
+        FROM {statistics}
+        ORDER BY `num` DESC
+        LIMIT 1', sub {
         my %row = @_;
-        $peak_user_count     = $row{peak_user_count};
-        $peak_user_count_num = $row{peak_user_count_num};
+        $peak_user_count     = $row{count};
+        $peak_user_count_num = $row{num};
     });
     
     # default to zero.
@@ -245,7 +251,11 @@ sub server_status {
     # if the user count if higher than the highest, update that statistic.
     if ($status->{count} >= $peak_user_count) {
         db_do(
-            'INSERT INTO {statistics} (peak_user_count,peak_user_count_timestamp,peak_user_count_num) VALUES (?, ?, ?)',
+            'INSERT INTO {statistics} (
+                `count`,
+                `time`,
+                `num`
+            ) VALUES (?, ?, ?)',
             $status->{count},
             time,
             $peak_user_count_num + 1
