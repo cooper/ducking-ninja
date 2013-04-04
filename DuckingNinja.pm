@@ -202,7 +202,7 @@ sub _db_replace {
     while ($query =~ m/\{(\w+)\}/) {
         my $table_name = conf(['database', 'tables'], $1);
         $table_name  ||= $1;
-        $query =~ s/\{$1\}/$table_name/;
+        $query =~ s/\{$1\}/\`$table_name\`/;
     }
     
     return $query;
@@ -274,17 +274,23 @@ sub server_status {
 ######################
 
 # returns a user based on a hash of post variables.
+#   {
+#       bundleVersionKey = "1.0";
+#       commonName = "Jake's iPhone";
+#       modelIdentifier = "iPhone5,2";
+#       shortVersion = "1.0";
+#       uniqueDeviceIdentifier = 7611a43afc3683d7ffff2f09074cbb43;
+#       uniqueGlobalDeviceIdentifier = dc086e37fb70c2220142cf44bfa678dd;
+#   }
 sub fetch_user_from_post {
     my %post      = @_; my %return;
     my $client_ip = $post{_clientIP};
     my $page_name = $post{_pageName};
     
-
-    
     # query for registration.
     my %reg;
     select_hash_each('
-    SELECT * FROM `registry`
+    SELECT * FROM {registry}
      WHERE `license_key`             = ?
        AND `unique_device_id`        = ?
        AND `unique_global_device_id` = ?',
@@ -309,7 +315,7 @@ sub fetch_user_from_post {
     # query for a ban.
     my %ban;
     select_hash_each('
-    SELECT * FROM `bans`
+    SELECT * FROM {bans}
      WHERE `license_key`             = ?
         OR `unique_device_id`        = ?
         OR `unique_global_device_id` = ?
@@ -332,8 +338,82 @@ sub fetch_user_from_post {
     }
     
     
+    
+    # the user is not banned.
+    # at this point, we should check if any of the values have changed
+    # and update them if they have.
+    
+    if (!$return{banned}) {
+        
+        my @possibly_changed = (
+            [   'modelIdentifier',  'model'                 ],
+            [   'commonName',       'common_name'           ],
+            [   'shortVersion',     'short_version'         ],
+            [   'bundleVersionKey', 'bundle_version_key'    ]
+        );
+        
+        # create a query checking each of these things.
+        my @arguments;
+        my $query = 'SELECT `license_key` FROM {registry} WHERE TRUE';
+
+        # add AND for each.
+        foreach my $maybe (@possibly_changed) {
+            
+            my ($post_name, $sql_name) = @$maybe;
+            
+            # make sure we have this variable in the POST.
+            next if !defined $post{$post_name};
+        
+            # add to query and arguments.
+            $query .= ' AND `'.$sql_name.'` = ?';
+            push @arguments, $post{$post_name};
+            
+        }
+        
+        # now we must check if anything matches the query.
+        my $all_matched;
+        select_hash_each($query, sub { $all_matched = 1 }) or return &HTTP_INTERNAL_SERVER_ERROR;
+        if (!$all_matched) {
+        
+            # something didn't match.
+            # now we have to update everything.
+            
+            # create an update query.
+            @arguments = ();
+            $query     = 'UPDATE {registry} SET';
+            
+            # set each item.
+            my $i = 0;
+            foreach my $maybe (@possibly_changed) {
+                
+                my ($post_name, $sql_name) = @$maybe;
+                
+                # make sure we have this variable in the POST.
+                next if !defined $post{$post_name};
+            
+                # add to query and arguments.
+                $query .= ($i == 0 ? '' : ',').' `'.$sql_name.'` = ?';
+                push @arguments, $post{$post_name};
+                
+                $i++;
+                
+            }
+            
+            # WHERE clause.
+            $query .= ' WHERE `license_key` = ?';
+            push @arguments, $post{licenseKey};
+            
+            # call the query.
+            db_do($query) or return &HTTP_INTERNAL_SERVER_ERROR;
+            
+        }
+        
+    } # end user not banned.
+    
+    # success.
     $return{accepted} = 1 unless exists $return{accepted};
     return \%return;
+    
 }
 
 #######################
