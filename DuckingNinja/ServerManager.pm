@@ -303,13 +303,13 @@ sub http_2_welcome {
     
 
     # fetch the client servers. currently, these are in no absolute order.
-    my @client_servers;
-    DuckingNinja::select_hash_each('SELECT `name` FROM {servers} ORDER BY `index`', sub {
+    my %client_servers;
+    DuckingNinja::select_hash_each('SELECT `name`, `enabled` FROM {servers} ORDER BY `index`', sub {
         my %row = @_;
         return if $row{name} eq 'last';
-        push @client_servers, $row{name};
+        $client_servers{$row{$name}} = $row{enabled} ? JSON::true : JSON::false;
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
-    $json{clientServers} = \@client_servers;
+    $json{clientServers} = \%client_servers;
     
     # chat servers.
     $json{servers} = $status->{servers} if ref $status->{servers} eq 'ARRAY';
