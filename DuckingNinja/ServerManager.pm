@@ -307,7 +307,7 @@ sub http_2_welcome {
     DuckingNinja::select_hash_each('SELECT `name`, `enabled` FROM {servers} ORDER BY `index`', sub {
         my %row = @_;
         return if $row{name} eq 'last';
-        $client_servers{$row{$name}} = $row{enabled} ? JSON::true : JSON::false;
+        $client_servers{$row{name}} = $row{enabled} ? JSON::true : JSON::false;
     }) or return &HTTP_INTERNAL_SERVER_ERROR;
     $json{clientServers} = \%client_servers;
     
