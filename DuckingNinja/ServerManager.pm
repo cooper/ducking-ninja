@@ -266,8 +266,10 @@ sub http_2_welcome {
                 server,
                 model,
                 common_name,
+                short_version,
+                bundle_version_key,
                 time
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $json{licenseKey},
             $post{registrationKey},
             $post{uniqueDeviceIdentifier},
@@ -276,6 +278,8 @@ sub http_2_welcome {
             DuckingNinja::conf('server', 'name'),
             $post{modelIdentifier},
             $post{commonName},
+            $post{shortVersion},
+            $post{bundleVersionKey},
             $post{_recvTime}
         ) or return &HTTP_INTERNAL_SERVER_ERROR;
         $user{notRegistered} = 0;
