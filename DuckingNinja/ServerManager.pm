@@ -227,7 +227,7 @@ sub http_2_welcome {
     if (!$post{registrationKey} && $user{notRegistered}) {
         $return{jsonObject} = {
             accepted => JSON::false,
-            error    => $user{notRegisteredError},
+            error    => 'Device did not attempt to register.',
             pleaseRegisterAgain => JSON::true
         };
         return \%return;
