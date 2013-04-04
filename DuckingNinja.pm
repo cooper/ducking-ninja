@@ -372,7 +372,7 @@ sub fetch_user_from_post {
         
         # now we must check if anything matches the query.
         my $all_matched;
-        select_hash_each($query, sub { $all_matched = 1 });
+        select_hash_each($query, sub { $all_matched = 1 }, @arguments);
         if (!$all_matched) {
         
             # something didn't match.
@@ -404,7 +404,7 @@ sub fetch_user_from_post {
             push @arguments, $post{licenseKey};
             
             # call the query.
-            db_do($query);
+            db_do($query, @arguments);
             
         }
         
