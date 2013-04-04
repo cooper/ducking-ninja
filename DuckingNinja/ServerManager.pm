@@ -352,7 +352,7 @@ sub http_2_welcome {
         $json{longestConvo} = int $row{client_duration};
     });
     
-    
+
     # current user count.
     $json{count} = $status->{count};
     

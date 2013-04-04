@@ -236,7 +236,7 @@ sub server_status {
         SELECT
             `count`,
             `num`
-        FROM {statistics}
+        FROM {stats_peak}
         ORDER BY `num` DESC
         LIMIT 1', sub {
         my %row = @_;
@@ -251,7 +251,7 @@ sub server_status {
     # if the user count if higher than the highest, update that statistic.
     if ($status->{count} >= $peak_user_count) {
         db_do(
-            'INSERT INTO {statistics} (
+            'INSERT INTO {stats_peak} (
                 `count`,
                 `time`,
                 `num`
