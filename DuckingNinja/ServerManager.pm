@@ -360,7 +360,9 @@ sub http_2_welcome {
     # current user count.
     $json{count} = $status->{count};
     
-    # TODO: totalConvos, longestConvo, averageConvo, totalChatTime.
+    # TODO: averageConvo.
+    # temporarily default to 15 minutes.
+    $json{averageConvo} = 15 * 60;
     
 
 
