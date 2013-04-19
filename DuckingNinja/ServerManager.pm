@@ -154,7 +154,7 @@ sub http_2_servers {
     # success.
     
     # use the server in index_used and set the last server to that value.
-    $return{jsonObject} = [$servers[$index_used]];
+    $return{jsonObject} = [$DuckingNinja::servers[$index_used]];
     
     return \%return;
     
