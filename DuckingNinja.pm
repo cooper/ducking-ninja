@@ -38,7 +38,7 @@ use DuckingNinja::User;
 
 our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
-our ($conf, $db, $dbh);
+our ($conf, $db, $dbh, @servers);
 sub conf { $conf->get(@_) }
 
 # called immediately as the server starts.
@@ -267,6 +267,41 @@ sub server_status {
     $GV{server_status}     = $status;
     
     return $status;
+}
+
+# returns the index of the next available server.
+sub choose_server {
+    my $last_index = shift;
+    my $i = 0;
+    while ($i < 2 * scalar @servers) {
+        my $next = _next_server($last_index);
+        
+        # if the server exists and is enabled, use it.
+        if (defined $servers[$next] && $servers[$next][1]) {
+            return $next;
+        }
+        
+        # otherwise try the next index.
+        $last_index = $next;
+        
+        $i++;
+    }
+    
+    # I'm not sure what to do at this point.
+    # this is illegal in over fifty countries.
+    return 0;
+    
+}
+
+# choose the next server and return its index.
+sub _next_server {
+    my $last_index = shift;
+    
+    # we reached the end.
+    if ($last_index == $#servers) {
+    }
+    
+    elsif (defined $servers[$last_index + 1]) {
 }
 
 ######################

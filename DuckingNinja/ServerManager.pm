@@ -126,35 +126,16 @@ sub http_2_servers {
     }
     
     # select the servers.
-    my @servers;
-    DuckingNinja::select_hash_each('SELECT * FROM {servers} WHERE `enabled` = 1', sub {
+    DuckingNinja::select_hash_each('SELECT * FROM {servers}', sub {
         my %row = @_;
         return if $row{name} eq 'last';
-        $servers[$row{index}] = $row{name};
+        $DuckingNinja::servers[$row{index}] = [ $row{name}, $row{enabled} ];
     });
 
-    # try using the next in line server.
-    # FIXME: does not work if two servers in a row are disabled.
-    my $index_used;
-    if (defined $servers[$last_index + 1]) {
-        $index_used = $last_index + 1;
-    }
-    
-    # use even next server.
-    elsif (defined $servers[$last_index + 2]) {
-        $index_used = $last_index + 2;
-    }
-    
-    # try using the first server instead.
-    elsif (defined $servers[0]) {
-        $index_used = 0;
-    }
-    
-    # give up.
-    else {
-        $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
-        return \%return;
-    }
+
+
+##### while (!$server_passed_ping)
+    my $index_used = DuckingNinja::choose_server($last_index);
     
     my $success = DuckingNinja::db_do(
         'UPDATE {servers} SET `index` = ? WHERE `name` = ?',
