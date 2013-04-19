@@ -299,9 +299,22 @@ sub _next_server {
     
     # we reached the end.
     if ($last_index == $#servers) {
+        return 0;
     }
     
-    elsif (defined $servers[$last_index + 1]) {
+    # try the next one.
+    my $i = 1;
+    while ($i < $last_index + scalar @servers) {
+        if (defined $servers[$last_index + $i]) {
+            return $last_index + $i;
+        }
+        $i++;
+    }
+    
+    # I'm not sure what to do at this point.
+    # this is illegal in over fifty countries.
+    return 0;
+    
 }
 
 ######################
