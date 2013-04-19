@@ -29,6 +29,9 @@ sub handler {
         $r->variable('page_name',   $page_name);
         $r->variable('api_prefix',  $api_prefix);
     }
+    else {
+        $api_version = $page_name = $api_prefix = -1;
+    }
     
     # GET exception.
     if ($r->request_method eq 'GET' && defined $page_name &&
