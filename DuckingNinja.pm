@@ -32,7 +32,7 @@ use utf8;
 use DBI;
 use JSON;
 use LWP::Simple 'get';
-use HTTP::Template;
+use HTML::Template;
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
