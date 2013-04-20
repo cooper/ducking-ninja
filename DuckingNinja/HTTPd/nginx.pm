@@ -25,14 +25,19 @@ sub handler {
         $api_version = $1;
         $page_name   = $2;
         $api_prefix  = $api_version + 0;
-        $r->variable('api_version', $api_version);
-        $r->variable('page_name',   $page_name);
-        $r->variable('api_prefix',  $api_prefix);
+    }
+    elsif ($r->uri =~ m/\/(\w+)$/) {
+        $api_version = $api_prefix = 'any';
+        $page_name   = $1;
     }
     else {
         $api_version = $page_name = $api_prefix = -1;
     }
     
+    $r->variable('api_version', $api_version);
+    $r->variable('page_name',   $page_name);
+    $r->variable('api_prefix',  $api_prefix);
+        
     # GET exception.
     if ($r->request_method eq 'GET' && defined $page_name &&
     $page_name ~~ @DuckingNinja::ServerManager::get_exceptions) {

@@ -11,7 +11,7 @@ use feature 'switch';
 use DuckingNinja::HTTPConstants;
 use JSON;
 
-our @get_exceptions = qw(servers); # page names that allow GET requests.
+our @get_exceptions = qw(servers eula); # page names that allow GET requests.
 our @ban_exceptions = qw(servers); # page names that are exempt from bans.
 our @dev_exceptions = qw(servers welcome); # page names that do not require device
                                            # identifiers and license keys.
@@ -98,6 +98,11 @@ sub page_for {
         $return{body} = JSON->new->allow_nonref->encode($return{jsonObject});
     }
 
+    # convert HTML::Template to body.
+    if (!defined $return{body} && defined $return{template}) {
+        $return{body} = $return{template}->output();
+    }
+
     # return as a hash reference.
     return \%return;
 }
@@ -161,6 +166,7 @@ sub http_2_servers {
 }
 
 # request to /welcome, the main status indicator.
+# TODO: systemName and systemVersion are now sent as well.
 sub http_2_welcome {
     my %post = @_;
     my (%json, %return);
@@ -642,6 +648,11 @@ sub http_2_report {
     };
     
     return \%return;
+}
+
+# EULA.
+sub http_any_eula {
+    return my $h = { template => DuckingNinja::http_template('eula') };
 }
 
 1

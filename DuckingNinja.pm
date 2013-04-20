@@ -32,6 +32,7 @@ use utf8;
 use DBI;
 use JSON;
 use LWP::Simple 'get';
+use HTTP::Template;
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
@@ -499,6 +500,23 @@ sub trend_groups {
     
     # return groups as an array reference for JSON encoding.
     return \@groups;
+    
+}
+
+######################
+### HTML TEMPLATES ###
+######################
+
+sub html_template {
+    my $name = shift;
+    
+    my $content;
+    select_hash_each('SELECT * FROM {templates} WHERE `name` = ? LIMIT 1', sub {
+        my %row = @_;
+        $content = $row{content};
+    });
+    
+    return HTML::Template->new(scalarref => \$content);
     
 }
 
