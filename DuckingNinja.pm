@@ -511,7 +511,7 @@ sub html_template {
     my $name = shift;
     
     my $content;
-    select_hash_each('SELECT * FROM {templates} WHERE `name` = ? LIMIT 1', sub {
+    select_hash_each('SELECT * FROM {templates} WHERE `name` = ? LIMIT 1', $name, sub {
         my %row = @_;
         $content = $row{content};
     });
