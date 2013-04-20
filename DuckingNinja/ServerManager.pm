@@ -651,7 +651,7 @@ sub http_2_report {
 }
 
 # EULA.
-sub http_any_eula {
+sub http_0_eula {
     return my $h = { template => DuckingNinja::http_template('eula') };
 }
 

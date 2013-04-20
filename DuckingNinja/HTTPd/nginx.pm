@@ -26,10 +26,14 @@ sub handler {
         $page_name   = $2;
         $api_prefix  = $api_version + 0;
     }
+    
+    # zero means any.
     elsif ($r->uri =~ m/\/(\w+)$/) {
-        $api_version = $api_prefix = 'any';
+        $api_version = $api_prefix = 0;
         $page_name   = $1;
     }
+    
+    # page won't work.
     else {
         $api_version = $page_name = $api_prefix = -1;
     }
