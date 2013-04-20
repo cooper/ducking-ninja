@@ -11,10 +11,11 @@ use feature 'switch';
 use DuckingNinja::HTTPConstants;
 use JSON;
 
-our @get_exceptions = qw(servers eula); # page names that allow GET requests.
+our @get_exceptions = qw(servers); # page names that allow GET requests.
 our @ban_exceptions = qw(servers); # page names that are exempt from bans.
 our @dev_exceptions = qw(servers welcome); # page names that do not require device
                                            # identifiers and license keys.
+our @all_exceptions = qw(eula);            # exempt from everything.
 
 # returns true if the server manager has a handler for the page.
 sub has_page {

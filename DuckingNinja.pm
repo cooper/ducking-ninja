@@ -354,7 +354,7 @@ sub fetch_user_from_post {
     
     # no match was found.
     if (!$reg{license_key}) {
-        $return{accepted}           = 0 unless $page_name ~~ @DuckingNinja::ServerManager::dev_exceptions;
+        $return{accepted}           = 0 unless ($page_name ~~ @DuckingNinja::ServerManager::dev_exceptions || $page_name ~~ @DuckingNinja::ServerManager::all_exceptions);
         $return{notRegistered}      = 1;
         $return{notRegisteredError} = 'Invalid product license key.';
     }
@@ -381,7 +381,7 @@ sub fetch_user_from_post {
     
     # a ban was found.
     if ($ban{banned}) {
-        $return{accepted}  = 0 unless $page_name ~~ @DuckingNinja::ServerManager::ban_exceptions;
+        $return{accepted}  = 0 unless ($page_name ~~ @DuckingNinja::ServerManager::ban_exceptions || $page_name ~~ @DuckingNinja::ServerManager::all_exceptions);
         $return{banned}    = 1;
         $return{banReason} = $ban{reason} || 'The server is not currently accepting requests';
     }
