@@ -44,7 +44,7 @@ sub handler {
         
     # GET exception.
     if ($r->request_method eq 'GET' && defined $page_name &&
-    $page_name ~~ @DuckingNinja::ServerManager::get_exceptions) {
+    ($page_name ~~ @DuckingNinja::ServerManager::get_exceptions || $page_name ~~ @DuckingNinja::ServerManager::all_exceptions)) {
         return handle_request($r, $api_version, $page_name, $api_prefix);
     }
 
