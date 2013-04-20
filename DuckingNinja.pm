@@ -521,4 +521,22 @@ sub html_template {
     
 }
 
+sub admin_template {
+    my $name = shift;
+    
+    my ($header, $content, $footer);
+    select_hash_each(
+    'SELECT * FROM {templates} WHERE `name` = ? OR `name` = ? OR `name` = ? LIMIT 3',
+    $name, 'admin-header', 'admin-footer', sub {
+        my %row = @_;
+        $content = $row{content} if lc $row{name} eq lc $name;
+        $header  = $row{content} if lc $row{name} eq 'admin-header';
+        $footer  = $row{content} if lc $row{name} eq 'admin-footer';
+    });
+    
+    return HTML::Template->new(scalarref => \"$header\n$content\n$footer");
+    
+}
+
+
 1

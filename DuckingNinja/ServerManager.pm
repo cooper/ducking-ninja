@@ -102,6 +102,7 @@ sub page_for {
     # convert HTML::Template to body.
     if (!defined $return{body} && defined $return{template}) {
         $return{body} = $return{template}->output();
+        $return{contentType} = 'text/html';
     }
 
     # return as a hash reference.
@@ -654,9 +655,16 @@ sub http_2_report {
 # EULA.
 sub http_0_eula {
     return my $h = {
-        template    => DuckingNinja::html_template('eula'),
-        contentType => 'text/html'
+        template    => DuckingNinja::html_template('eula')
     };
 }
+
+# admin homepage.
+sub http_0_panel {
+    return my $h = {
+        template    => DuckingNinja::admin_template('eula')
+    };
+}
+
 
 1
