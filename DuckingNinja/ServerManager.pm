@@ -652,7 +652,10 @@ sub http_2_report {
 
 # EULA.
 sub http_0_eula {
-    return my $h = { template => DuckingNinja::http_template('eula') };
+    return my $h = {
+        template    => DuckingNinja::http_template('eula'),
+        contentType => 'text/html'
+    };
 }
 
 1
