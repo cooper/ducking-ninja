@@ -537,7 +537,7 @@ sub admin_template {
     
     # create a template.
     my $t = HTML::Template->new(
-        scalarref           => \"$header\n$content\n$footer"
+        scalarref           => \"$header\n$content\n$footer",
         die_on_bad_params   => 0
     );
     
