@@ -702,7 +702,7 @@ sub http_2_submit_log {
         `unique_device_id`,
         `unique_global_device_id`,
         `time`
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    ) VALUES (?, ?, ?, ?, ?, ?)',
         $post{conversationID},
         DuckingNinja::conf('server', 'name'),
         $post{_clientIP},
