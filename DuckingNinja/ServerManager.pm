@@ -662,7 +662,7 @@ sub http_0_eula {
 # admin homepage.
 sub http_0_panel {
     return my $h = {
-        template    => DuckingNinja::admin_template('eula')
+        template    => DuckingNinja::admin_template('home')
     };
 }
 

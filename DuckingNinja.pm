@@ -522,7 +522,7 @@ sub html_template {
 }
 
 sub admin_template {
-    my $name = shift;
+    my $name = q(admin-).shift();
     
     # select the page, the header, and the footer.
     my ($header, $content, $footer);
