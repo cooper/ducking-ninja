@@ -547,7 +547,8 @@ sub admin_template {
     $t->param(
         service_name        => conf('service', 'name'),
         service_logo_url    => conf('service', 'logo_url'),
-        server_name         => conf('server',  'name')
+        server_name         => conf('server',  'name'),
+        server_uptime       => `uptime`
     );
     
     return $t;
