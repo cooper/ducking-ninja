@@ -653,7 +653,7 @@ sub http_2_report {
 }
 
 # submit a log.
-sub http_2_submit_log {
+sub http_2_submitLog {
     my %post = @_;
     my %return;
 
