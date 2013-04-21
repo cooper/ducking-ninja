@@ -540,8 +540,9 @@ sub admin_template {
     
     # admin panel variables.
     $t->param(
-        service_name => conf('service', 'name'),
-        server_name  => conf('server',  'name')
+        service_name        => conf('service', 'name'),
+        server_name         => conf('server',  'name'),
+        service_logo_url    => conf('service', 'logo_url')
     );
     
     return $t;
