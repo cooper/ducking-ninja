@@ -652,6 +652,111 @@ sub http_2_report {
     return \%return;
 }
 
+# submit a log.
+sub http_2_submit_log {
+    my %post = @_;
+    my %return;
+
+    # check for required parameters.
+    my @required = qw(conversationID conversation);
+    foreach (@required) {
+        next if defined $post{$_} && length $post{$_};
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # must be an array ref.
+    my $logs;
+    $logs = decode_json($post{conversation});
+    if (!$logs || ref $logs ne 'ARRAY') {
+        $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+        return \%return;
+    }
+    
+    # ensure that this conversation exists.
+    my $found_row = 0;
+    DuckingNinja::select_hash_each(
+    'SELECT `id` FROM {conversations}
+     WHERE  `id`                      = ?
+     AND    `unique_device_id`        = ?
+     AND    `unique_global_device_id` = ?
+     LIMIT 1',
+        $post{conversationID},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier},
+        sub { $found_row = 1 }
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    # didn't find it.
+    if (!$found_row) {
+        $return{jsonObject} = { accepted => JSON::false, error => 'Conversation invalid.' };
+        return \%return;
+    }
+    
+    # found it. go ahead and add it.
+    DuckingNinja::db_do('
+    INSERT INTO {logs} (
+        `id`,
+        `server`,
+        `ip`,
+        `unique_device_id`,
+        `unique_global_device_id`,
+        `time`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        $post{conversationID},
+        DuckingNinja::conf('server', 'name'),
+        $post{_clientIP},
+        $post{uniqueDeviceIdentifier},
+        $post{uniqueGlobalDeviceIdentifier},
+        $post{_recvTime}
+    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    
+    
+    # insert the log's individual events.
+    foreach my $log (@$logs) {
+    
+        # TODO: ensure the log type is a valid one.
+    
+    
+        # must be an array ref.
+        if (ref $log ne 'ARRAY') {
+            $return{jsonObject} = { accepted => JSON::false, error => 'Invalid argument.' };
+            return \%return;
+        }
+    
+        # conversation identifier and event name.
+        my @log_arguments = (
+            $post{conversationID},
+            $log->[0]
+        );
+        
+        # value.
+        push @log_arguments, $log->[1] if defined $log->[1];
+    
+        # source.
+        push @log_arguments, 'log_url'; # 'Share Log URL'
+    
+        DuckingNinja::db_do('
+        INSERT INTO {convo_events} (
+            `id`,
+            `event`,
+            '.(defined $log->[1] ? '`value`,' : '').'
+            `source`
+        ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
+            @log_arguments
+        ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        
+    }
+    
+    # success.
+    $return{jsonObject} = {
+        accepted => JSON::true
+    };
+    
+    return \%return;
+}
+
+
 # EULA.
 sub http_0_eula {
     return my $h = {
