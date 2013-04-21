@@ -485,8 +485,10 @@ sub trend_groups {
             backgroundColor => $row{style_background_color},
             imageURL        => $row{style_background_image},
             fontSize        => $row{style_font_size},
+            textColor       => $row{style_text_color},
             shadowOpacity   => $row{style_shadow_opacity},
-            textColor       => $row{style_text_color}
+            shadowRadius    => $row{style_shadow_radius},
+            shadowOffset    => [$row{style_shadow_offset_x}, $row{'style_shadow_offset_y'}]
         );
         
         # remove omitted values.
@@ -544,8 +546,8 @@ sub admin_template {
     # admin panel variables.
     $t->param(
         service_name        => conf('service', 'name'),
-        server_name         => conf('server',  'name'),
-        service_logo_url    => conf('service', 'logo_url')
+        service_logo_url    => conf('service', 'logo_url'),
+        server_name         => conf('server',  'name')
     );
     
     return $t;
