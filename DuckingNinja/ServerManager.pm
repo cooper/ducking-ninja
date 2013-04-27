@@ -760,7 +760,7 @@ sub http_2_submitLog {
 # EULA.
 sub http_0_eula {
     return my $h = {
-        template    => DuckingNinja::html_template('eula')
+        template    => DuckingNinja::html_template_db('eula')
     };
 }
 

@@ -31,6 +31,7 @@ use utf8;
 
 use DBI;
 use JSON;
+use File::Basename 'fileparse';
 use LWP::Simple 'get';
 use HTML::Template;
 
@@ -510,7 +511,28 @@ sub trend_groups {
 ### HTML TEMPLATES ###
 ######################
 
+# fetch a builtin template.
 sub html_template {
+    my ($name, $directory) = @_;
+    $directory ||= 'www';           # directory relative to $gitdir
+    
+    my $file = fileparse($file).q(.tpl);
+    $file = "$gitdir/$directory/$file";
+    
+}
+
+# fetch a private template.
+sub html_template_private {
+    my ($name, $directory) = @_;    # directory relative to private
+    $directory ||= 'www';
+    
+    my $t = html_template($name, "private/$directory");
+    
+    return $t;
+}
+
+# select an HTML template from database.
+sub html_template_db {
     my $name = shift;
     
     my $content;
@@ -523,7 +545,14 @@ sub html_template {
     
 }
 
+# fetch a builtin admin template.
 sub admin_template {
+    my $name = shift;
+
+}
+
+# select an admin template from database.
+sub admin_template_db {
     my $name = q(admin-).shift();
     
     # select the page, the header, and the footer.
@@ -542,8 +571,17 @@ sub admin_template {
         scalarref           => \"$header\n$content\n$footer",
         die_on_bad_params   => 0
     );
+
+    _admin_vars($t);    
+
+    return $t;
     
-    # admin panel variables.
+}
+
+# apply admin variables to a template.
+sub _admin_vars {
+    my $t = shift;
+
     $t->param(
         service_name        => conf('service', 'name'),
         service_logo_url    => conf('service', 'logo_url'),
@@ -551,9 +589,6 @@ sub admin_template {
         server_uptime       => `uptime`
     );
     
-    return $t;
-    
 }
-
 
 1
