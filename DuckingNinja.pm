@@ -516,7 +516,7 @@ sub html_template {
     my ($name, $directory) = @_;
     $directory ||= 'www';           # directory relative to $gitdir
     
-    my $file = fileparse($file).q(.tpl);
+    my $file = fileparse($name).q(.tpl);
     $file = "$gitdir/$directory/$file";
     
 }
