@@ -118,7 +118,7 @@ sub handle_request {
     $r->log_error(0, "DuckingNinja: handling page $page_name");
     my $return = DuckingNinja::ServerManager::page_for(
         $page_name, $api_prefix, %postVariables
-    ) or $r->log_error(0, "$page_name returned undef") and return &HTTP_NOT_FOUND;
+    );
     
     # debug log.
     $r->log_error(0, 'DuckingNinja: '.JSON->new->allow_nonref->pretty->encode($return));

@@ -81,7 +81,14 @@ sub page_for {
         else {
         
             # call the handler.
-            my $return = $code->(%post) || (); return if ref $return ne 'HASH';
+            my $return = $code->(%post) || ();
+            if (ref $return ne 'HASH') {
+                $return{jsonObject} = {
+                    accepted => JSON::false,
+                    error    => "Error $return"
+                };
+                return \%return;
+            }
             %return = %$return;
             
         }
