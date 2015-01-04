@@ -87,12 +87,10 @@ sub page_for {
                     accepted => JSON::false,
                     error    => "Error $return"
                 };
-                return \%return;
             }
-            %return = %$return;
+            else { %return = %$return }
             
         }
-        
     }
     
     # default content-type to 'text/plain'
