@@ -11,6 +11,7 @@ use nginx;
 use URI;
 use URI::Encode qw(uri_encode uri_decode);
 use DuckingNinja;
+use JSON;
 
 DuckingNinja::start();
 
@@ -121,6 +122,11 @@ sub handle_request {
     return &HTTP_INTERNAL_SERVER_ERROR if ref $return ne 'HASH';
     my %return = %$return;
 
+    # log an error.
+    if ($return{statusCode} && $return{statusCode} != 200) {
+        $r->log_error(0, 'DuckingNinja: '.JSON->new->encode($return));
+    }
+    
     # send Content-Type. defaults to text/plain.
     $r->send_http_header($return{contentType});
     
