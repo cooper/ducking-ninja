@@ -82,13 +82,27 @@ sub page_for {
         
             # call the handler.
             my $return = $code->(%post) || ();
-            if (ref $return ne 'HASH') {
+            
+            # success.
+            if (ref $return eq 'HASH') {
+                %return = %$return;
+            }
+            
+            # error.
+            elsif (ref $return eq 'SCALAR') {
+                $return{jsonObject} = {
+                    accepted => JSON::false,
+                    error    => $$return
+                };
+            }
+            
+            # unknown type.
+            else {
                 $return{jsonObject} = {
                     accepted => JSON::false,
                     error    => "Error $return"
                 };
             }
-            else { %return = %$return }
             
         }
     }
@@ -153,15 +167,7 @@ sub http_2_servers {
         'UPDATE {servers} SET `index` = ? WHERE `name` = ?',
         $index_used,
         'last'
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
-    
-    # failed to set.
-    if (!$success) {
-        $return{statusCode} = &HTTP_INTERNAL_SERVER_ERROR;
-        $return{body}       = 'failed to set current server';
-        return \%return;
-    }
-    
+    ) or return error 'Failed to set current server index';
     
     # success.
     
@@ -275,7 +281,7 @@ sub http_2_welcome {
             $post{shortVersion},
             $post{bundleVersionKey},
             $post{_recvTime}
-        ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        ) or return error 'Failed to store device registration';
         $user{notRegistered} = 0;
     
     }
@@ -306,7 +312,7 @@ sub http_2_welcome {
         my %row = @_;
         return if $row{name} eq 'last';
         $client_servers{$row{name}} = $row{enabled} ? JSON::true : JSON::false;
-    }) or return &HTTP_INTERNAL_SERVER_ERROR;
+    }) or return error 'Failed to fetch available servers';
     $json{clientServers} = \%client_servers;
     
     # chat servers.
@@ -326,7 +332,7 @@ sub http_2_welcome {
     'SELECT `count` FROM {stats_peak} ORDER BY `num` DESC LIMIT 1', sub {
         my %row = @_;
          $json{maxCount} = int $row{count};
-    }) or return &HTTP_INTERNAL_SERVER_ERROR;
+    }) or return error 'Failed to fetch peak user count';
 
     # total conversation count and total conversation duration..
     DuckingNinja::select_hash_each(
@@ -337,7 +343,7 @@ sub http_2_welcome {
         my %row = @_;
          $json{totalChatTime} = int $row{total_time};
          $json{totalConvos}   = int $row{total_num};
-    }) or return &HTTP_INTERNAL_SERVER_ERROR;
+    }) or return error 'Failed to fetch conversation statistics';
     
     # longest conversation.
     DuckingNinja::select_hash_each('
@@ -443,7 +449,7 @@ sub http_2_start {
             $post{uniqueGlobalDeviceIdentifier},
             $post{_recvTime},
             $post{question}
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to store conversation info';
     
     # insert interest groups.
     DuckingNinja::db_do(
@@ -530,7 +536,7 @@ sub http_2_end {
         $post{conversationID},
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier}
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to store conversation info';
     
     # insert interests matched.
     if ($post{interestsMatched}) {
@@ -583,7 +589,7 @@ sub http_2_report {
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier},
         sub { $found_row = 1 }
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to fetch conversation info';
     
     # didn't find it.
     if (!$found_row) {
@@ -609,7 +615,7 @@ sub http_2_report {
         $post{uniqueGlobalDeviceIdentifier},
         $post{reason},
         $post{_recvTime}
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to store report info';
     
     
     # insert the log's individual events.
@@ -644,7 +650,7 @@ sub http_2_report {
             `source`
         ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
             @log_arguments
-        ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        ) or return error 'Failed to store conversation data';
         
     }
     
@@ -690,7 +696,7 @@ sub http_2_submitLog {
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier},
         sub { $found_row = 1 }
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to fetch conversation info';
     
     # didn't find it.
     if (!$found_row) {
@@ -714,7 +720,7 @@ sub http_2_submitLog {
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier},
         $post{_recvTime}
-    ) or return &HTTP_INTERNAL_SERVER_ERROR;
+    ) or return error 'Failed to insert log data';
     
     
     # insert the log's individual events.
@@ -749,7 +755,7 @@ sub http_2_submitLog {
             `source`
         ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
             @log_arguments
-        ) or return &HTTP_INTERNAL_SERVER_ERROR;
+        ) or return error 'Failed to insert conversation data';
         
     }
     
@@ -776,5 +782,10 @@ sub http_0_panel {
     };
 }
 
+# return error.
+sub error ($) {
+    my $msg = shift;
+    return \$msg;
+}
 
 1
