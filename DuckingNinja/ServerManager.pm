@@ -11,6 +11,8 @@ use feature 'switch';
 use DuckingNinja::HTTPConstants;
 use JSON;
 
+sub error ($);
+
 our @get_exceptions = qw(servers); # page names that allow GET requests.
 our @ban_exceptions = qw(servers); # page names that are exempt from bans.
 our @dev_exceptions = qw(servers welcome); # page names that do not require device
