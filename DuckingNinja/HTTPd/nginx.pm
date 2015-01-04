@@ -118,15 +118,13 @@ sub handle_request {
         $page_name, $api_prefix, %postVariables
     ) or return &HTTP_NOT_FOUND;
     
+    # debug log.
+    $r->log_error(0, 'DuckingNinja: '.JSON->new->allow_nonref(1)->encode($return));
+    
     # must return a hash reference.
     return &HTTP_INTERNAL_SERVER_ERROR if ref $return ne 'HASH';
     my %return = %$return;
 
-    # log an error.
-    if ($return{statusCode} && $return{statusCode} != 200) {
-        $r->log_error(0, 'DuckingNinja: '.JSON->new->encode($return));
-    }
-    
     # send Content-Type. defaults to text/plain.
     $r->send_http_header($return{contentType});
     
