@@ -113,13 +113,15 @@ sub handle_request {
     $postVariables{_recvTime} = time;
     $postVariables{_pageName} = $page_name;
 
+    
     # call it the handler.
+    $r->log_error(0, "DuckingNinja: handling page $page_name");
     my $return = DuckingNinja::ServerManager::page_for(
         $page_name, $api_prefix, %postVariables
     ) or return &HTTP_NOT_FOUND;
     
     # debug log.
-    $r->log_error(0, 'DuckingNinja: '.JSON->new->allow_nonref(1)->encode($return));
+    $r->log_error(0, 'DuckingNinja: '.JSON->new->allow_nonref->pretty->encode($return));
     
     # must return a hash reference.
     return &HTTP_INTERNAL_SERVER_ERROR if ref $return ne 'HASH';
@@ -131,7 +133,7 @@ sub handle_request {
     # only send header if so requested.
     return _status($return{statusCode}) if $r->header_only;
 
-
+    
     # BODY
 
     # if a body is specified, print it.
