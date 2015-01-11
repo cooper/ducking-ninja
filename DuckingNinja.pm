@@ -485,6 +485,7 @@ sub trend_groups {
             borderColor     => $row{style_border_color},
             backgroundColor => $row{style_background_color},
             imageURL        => $row{style_background_image},
+            iconURL         => $row{style_icon_image},
             fontSize        => $row{style_font_size},
             textColor       => $row{style_text_color},
             shadowOpacity   => $row{style_shadow_opacity},
