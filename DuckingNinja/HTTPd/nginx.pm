@@ -121,7 +121,7 @@ sub handle_request {
     );
     
     # debug log.
-    $r->log_error(0, 'DuckingNinja: '.JSON->new->allow_nonref->pretty->encode($return));
+    $r->log_error(0, 'DuckingNinja: '.(eval { JSON->new->allow_nonref->allow_blessed->pretty->encode($return) }));
     
     # must return a hash reference.
     return &HTTP_INTERNAL_SERVER_ERROR if ref $return ne 'HASH';
