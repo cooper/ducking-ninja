@@ -366,6 +366,9 @@ sub http_2_welcome {
     $json{averageConvo} = 15 * 60;
     
 
+    # HARDCODED: clean chat force
+    $json{forceInterests} = ['clean', 'chat', 'clean chat'];
+
 
     #-- success --#
 
