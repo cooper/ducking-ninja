@@ -343,8 +343,7 @@ sub fetch_user_from_post {
     SELECT * FROM {registry}
      WHERE `license_key`             = ?
        AND `unique_device_id`        = ?
-       AND `unique_global_device_id` = ?
-       AND `enabled` = TRUE',
+       AND `unique_global_device_id` = ?',
     
     $post{licenseKey}                   || '',
     $post{uniqueDeviceIdentifier}       || '',
@@ -402,8 +401,7 @@ sub fetch_user_from_post {
             [   'commonName',       'common_name'           ],
             [   'shortVersion',     'short_version'         ],
             [   'bundleVersionKey', 'bundle_version_key'    ],
-            [   '_recvTime',        'last_time'             ],
-            [   '_true',            'enabled'               ]
+            [   '_recvTime',        'last_time'             ]
         );
         
         # create a query checking each of these things.
@@ -454,7 +452,7 @@ sub fetch_user_from_post {
             }
             
             # WHERE clause.
-            $query .= ' WHERE `license_key` = ? AND `enabled` = TRUE';
+            $query .= ' WHERE `license_key` = ?';
             push @arguments, $post{licenseKey};
             
             # call the query.

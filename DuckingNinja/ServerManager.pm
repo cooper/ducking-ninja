@@ -248,11 +248,6 @@ sub http_2_welcome {
             return \%return;
         }
     
-        # disable any former registration
-        DuckingNinja::db_do(
-            'UPDATE {registry} SET `enabled` = FALSE WHERE `unique_global_device_id` = ?',
-        $post{uniqueGlobalDeviceIdentifier});
-    
         # it's valid.
         $json{registeredSuccessfully} = JSON::true;
         $json{licenseKey} = DuckingNinja::Private::generate_license_key(%post);
@@ -269,9 +264,8 @@ sub http_2_welcome {
                 short_version,
                 bundle_version_key,
                 time,
-                last_time,
-                enabled
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                last_time
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $json{licenseKey},
             $post{registrationKey},
             $post{uniqueDeviceIdentifier},
