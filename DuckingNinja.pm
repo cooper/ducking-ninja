@@ -395,13 +395,15 @@ sub fetch_user_from_post {
     # and update them if they have.
     
     if (!$return{banned}) {
+        $post{_true} = 1;
         
         my @possibly_changed = (
             [   'modelIdentifier',  'model'                 ],
             [   'commonName',       'common_name'           ],
             [   'shortVersion',     'short_version'         ],
             [   'bundleVersionKey', 'bundle_version_key'    ],
-            [   '_recvTime',        'last_time'             ]
+            [   '_recvTime',        'last_time'             ],
+            [   '_true',            'enabled'               ]
         );
         
         # create a query checking each of these things.
