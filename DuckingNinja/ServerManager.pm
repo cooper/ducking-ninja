@@ -214,7 +214,7 @@ sub http_2_welcome {
     if (!$status) {
         $return{jsonObject} = {
             accepted => JSON::false,
-            error    => 'The service is currently unavailable.'
+            error    => 'The chat service is currently unavailable.'
         };
         return \%return;
     }
@@ -229,7 +229,7 @@ sub http_2_welcome {
     if (!$post{registrationKey} && $user{notRegistered}) {
         $return{jsonObject} = {
             accepted => JSON::false,
-            error    => 'Device did not attempt to register.',
+            error    => 'Please wait, registering device...', #'Device did not attempt to register.',
             pleaseRegisterAgain => JSON::true
         };
         return \%return;
@@ -248,10 +248,9 @@ sub http_2_welcome {
             return \%return;
         }
     
-        # delete any former registration.
+        # disable any former registration
         DuckingNinja::db_do(
-            'DELETE FROM {registry}         WHERE
-            `unique_global_device_id` = ?',
+            'UPDATE {registry} SET `enabled` = FALSE WHERE `unique_global_device_id` = ?',
         $post{uniqueGlobalDeviceIdentifier});
     
         # it's valid.
@@ -269,8 +268,10 @@ sub http_2_welcome {
                 common_name,
                 short_version,
                 bundle_version_key,
-                time
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                time,
+                last_time,
+                enabled
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $json{licenseKey},
             $post{registrationKey},
             $post{uniqueDeviceIdentifier},
@@ -281,12 +282,14 @@ sub http_2_welcome {
             $post{commonName},
             $post{shortVersion},
             $post{bundleVersionKey},
-            $post{_recvTime}
+            $post{_recvTime},
+            $post{_recvTime},
+            1
         ) or return error 'Failed to store device registration';
         $user{notRegistered} = 0;
     
     }
-    
+
     
     
     #-- trend stuff and welcome message --#

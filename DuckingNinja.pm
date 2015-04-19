@@ -343,7 +343,8 @@ sub fetch_user_from_post {
     SELECT * FROM {registry}
      WHERE `license_key`             = ?
        AND `unique_device_id`        = ?
-       AND `unique_global_device_id` = ?',
+       AND `unique_global_device_id` = ?
+       AND `enabled` = TRUE',
     
     $post{licenseKey}                   || '',
     $post{uniqueDeviceIdentifier}       || '',
@@ -399,12 +400,13 @@ sub fetch_user_from_post {
             [   'modelIdentifier',  'model'                 ],
             [   'commonName',       'common_name'           ],
             [   'shortVersion',     'short_version'         ],
-            [   'bundleVersionKey', 'bundle_version_key'    ]
+            [   'bundleVersionKey', 'bundle_version_key'    ],
+            [   '_recvTime',        'last_time'             ]
         );
         
         # create a query checking each of these things.
         my @arguments;
-        my $query = 'SELECT `license_key` FROM {registry} WHERE TRUE';
+        my $query = 'SELECT `license_key` FROM {registry} WHERE `enabled` = TRUE';
 
         # add AND for each.
         foreach my $maybe (@possibly_changed) {
@@ -450,7 +452,7 @@ sub fetch_user_from_post {
             }
             
             # WHERE clause.
-            $query .= ' WHERE `license_key` = ?';
+            $query .= ' WHERE `license_key` = ? AND `enabled` = TRUE';
             push @arguments, $post{licenseKey};
             
             # call the query.
