@@ -408,7 +408,7 @@ sub fetch_user_from_post {
         
         # create a query checking each of these things.
         my @arguments;
-        my $query = 'SELECT `license_key` FROM {registry} WHERE `enabled` = TRUE';
+        my $query = 'SELECT `license_key` FROM {registry}';
 
         # add AND for each.
         foreach my $maybe (@possibly_changed) {
