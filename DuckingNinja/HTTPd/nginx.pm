@@ -108,7 +108,8 @@ sub handle_request {
         return &HTTP_NOT_FOUND;
     }
     
-    # apply a few other artificial variables.        
+    # apply a few other artificial variables.
+    $postVariables{_request}  = $r;
     $postVariables{_clientIP} = $r->remote_addr;
     $postVariables{_recvTime} = time;
     $postVariables{_pageName} = $page_name;

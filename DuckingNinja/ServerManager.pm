@@ -281,6 +281,15 @@ sub http_2_welcome {
             1
         ) or return error 'Failed to store device registration';
         $user{notRegistered} = 0;
+        
+        DuckingNinja::IRC::post($post{_request},
+            'New device registration',
+            [ 'Application',    "$post{bundleID} $post{shortVersion} ($post{bundleVersionKey})" ],
+            [ 'Device name',    $post{commonName}                   ],
+            [ 'Device model',   $post{modelIdentifier}              ],
+            [ 'Device system',  "$post{systemName} $post{systemVersion}" ],
+            [ 'IP address',     $post{_clientIP}                    ]
+        );
     
     }
 

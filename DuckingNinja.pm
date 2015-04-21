@@ -37,6 +37,7 @@ use HTML::Template;
 
 use DuckingNinja::ServerManager;
 use DuckingNinja::User;
+use DuckingNinja::IRC;
 
 our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
