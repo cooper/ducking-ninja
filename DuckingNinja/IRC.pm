@@ -37,7 +37,7 @@ sub irc_message {
     print $sock "NICK $nick\r\n";
     print $sock "USER ninja * * :DuckingNina\r\n";
 
-    sleep 1;
+    sleep 3;
     print $sock "JOIN $chan\r\n";
     print $sock "PRIVMSG $chan :$_\r\n" foreach @lines;
     print $sock "QUIT\r\n";
