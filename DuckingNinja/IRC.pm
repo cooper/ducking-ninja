@@ -6,6 +6,7 @@ package DuckingNinja::IRC;
 use warnings;
 use strict;
 use IO::Socket::IP;
+use nginx;
 
 sub post {
     my $r = shift;
@@ -36,12 +37,14 @@ sub irc_message {
     my $nick = 'duck-'.substr(time, -3);
     print $sock "NICK $nick\r\n";
     print $sock "USER ninja * * :DuckingNina\r\n";
-    
+
     # after five seconds, commit.
     $r->sleep(5000, sub {
+        $r->log_error(0, 'entered callback');
         print $sock "JOIN $chan\r\n";
         print $sock "PRIVMSG $chan :$_\r\n" foreach @lines;
         print $sock "QUIT\r\n";
+        return OK;
     });
 }
 
