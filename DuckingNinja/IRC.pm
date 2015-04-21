@@ -8,7 +8,6 @@ use strict;
 use IO::Socket::IP;
 
 sub post {
-    my $r = shift;
     my @final;
     foreach my $line (@_) {
         if (ref $line eq 'ARRAY') {
@@ -19,12 +18,12 @@ sub post {
         }
         push @final, $line;
     }
-    return irc_message($r, @final);
+    return irc_message(@final);
 }
 
 sub irc_message {
     return if !DuckingNinja::conf('irc', 'enabled');
-    my ($r, @lines) = @_;
+    my @lines = @_;
     
     my $sock = IO::Socket::IP->new(
         PeerHost => (split /:/, DuckingNinja::conf('irc', 'address'))[0],
