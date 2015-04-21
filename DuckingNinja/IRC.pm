@@ -3,6 +3,10 @@
 # This file represents a DuckingNinja user.
 package DuckingNinja::IRC;
 
+use warnings;
+use strict;
+use IO::Socket::IP;
+
 sub post {
     my $r = shift;
     my @final;
