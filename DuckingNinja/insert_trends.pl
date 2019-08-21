@@ -78,7 +78,8 @@ foreach my $group_name (keys %trends) {
         $query .= ', ?)';
         
         # run it.
-        DuckingNinja::db_do($query, @arguments) or die "Insert query failed\n";
+        my $err = DuckingNinja::db_do($query, @arguments);
+        die "Insert query failed: $err\n" if $err;
         
         say "Created group '$group_name'";
         
@@ -105,7 +106,8 @@ foreach my $group_name (keys %trends) {
         $query .= ' WHERE `name` = ?';
         
         # run it.
-        DuckingNinja::db_do($query, @arguments, $group_name) or die "Update query failed.\n";
+        my $err = DuckingNinja::db_do($query, @arguments, $group_name);
+        die "Update query failed: $err\n" if $err;
 
         say "Updated group '$group_name'";
 
@@ -130,12 +132,13 @@ foreach my $group_name (keys %trends) {
         }
         
         # otherwise, add it.
-        DuckingNinja::db_do(
+        my $err = DuckingNinja::db_do(
             'INSERT INTO {interests} (`group`, `interest`, `time`) VALUES (?, ?, ?)',
             $group_name,
             $interest,
             time
-        ) or die "Insert interest query failed.\n";
+        );
+        die "Insert interest query failed: $err\n" if $err;
         
         say "Added '$interest' to '$group_name'";
         

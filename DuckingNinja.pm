@@ -155,7 +155,9 @@ sub database_connected {
 # run a do().
 sub db_do {
     my ($query, @query_args) = @_;
-    return $dbh->do(_db_replace($query), undef, @query_args);
+    $dbh->do(_db_replace($query), undef, @query_args)
+        or return $dbh->errstr;
+    return 1;
 }
 
 # selects a hash (query, query_args, code)

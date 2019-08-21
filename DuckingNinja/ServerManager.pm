@@ -251,7 +251,7 @@ sub http_2_welcome {
         # it's valid.
         $json{registeredSuccessfully} = JSON::true;
         $json{licenseKey} = DuckingNinja::Private::generate_license_key(%post);
-        DuckingNinja::db_do('
+        my $err = DuckingNinja::db_do('
             INSERT INTO {registry} (
                 license_key,
                 registration_key,
@@ -279,7 +279,8 @@ sub http_2_welcome {
             $post{_recvTime},
             $post{_recvTime},
             1
-        ) or return error 'Failed to store device registration';
+        ); 
+        return error "Failed to store device registration: $err" if $err;
         $user{notRegistered} = 0;
         
         DuckingNinja::IRC::post(
@@ -440,7 +441,7 @@ sub http_2_start {
     }
 
     # insert into database.
-    DuckingNinja::db_do('
+    my $err = DuckingNinja::db_do('
         INSERT INTO {conversations} (
             id,
             session_type,
@@ -459,7 +460,8 @@ sub http_2_start {
             $post{uniqueGlobalDeviceIdentifier},
             $post{_recvTime},
             $post{question}
-    ) or return error 'Failed to store conversation info';
+    );
+    return error "Failed to store conversation info: $err" if $err;
     
     # insert interest groups.
     DuckingNinja::db_do(
@@ -527,7 +529,7 @@ sub http_2_end {
         0, # XXX
         $post{fate}             + 0
     );
-    DuckingNinja::db_do(
+    my $err = DuckingNinja::db_do(
        'UPDATE {conversations} SET
         `omegle_id`         = ?,
         `omegle_server`     = ?,
@@ -546,7 +548,8 @@ sub http_2_end {
         $post{conversationID},
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier}
-    ) or return error 'Failed to store conversation info';
+    );
+    return error "Failed to store conversation info: $err" if $err;
     
     # insert interests matched.
     if ($post{interestsMatched}) {
@@ -608,7 +611,7 @@ sub http_2_report {
     }
     
     # found it. go ahead and add it.
-    DuckingNinja::db_do('
+    my $err = DuckingNinja::db_do('
     INSERT INTO {reports} (
         `id`,
         `server`,
@@ -625,7 +628,8 @@ sub http_2_report {
         $post{uniqueGlobalDeviceIdentifier},
         $post{reason},
         $post{_recvTime}
-    ) or return error 'Failed to store report info';
+    );
+    return error "Failed to store report info: $err" if $err;
     
     
     # insert the log's individual events.
@@ -652,7 +656,7 @@ sub http_2_report {
         # source.
         push @log_arguments, 'report';
     
-        DuckingNinja::db_do('
+        my $err = DuckingNinja::db_do('
         INSERT INTO {convo_events} (
             `id`,
             `event`,
@@ -660,7 +664,8 @@ sub http_2_report {
             `source`
         ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
             @log_arguments
-        ) or return error 'Failed to store conversation data';
+        );
+        return error "Failed to store conversation data: $err" if $err;
         
     }
     
@@ -715,7 +720,7 @@ sub http_2_submitLog {
     }
     
     # found it. go ahead and add it.
-    DuckingNinja::db_do('
+    my $err = DuckingNinja::db_do('
     INSERT INTO {logs} (
         `id`,
         `server`,
@@ -730,7 +735,8 @@ sub http_2_submitLog {
         $post{uniqueDeviceIdentifier},
         $post{uniqueGlobalDeviceIdentifier},
         $post{_recvTime}
-    ) or return error 'Failed to insert log data';
+    );
+    return error "Failed to insert log data: $err" if $err;
     
     
     # insert the log's individual events.
@@ -757,7 +763,7 @@ sub http_2_submitLog {
         # source.
         push @log_arguments, 'log_url'; # 'Share Log URL'
     
-        DuckingNinja::db_do('
+        my $err = DuckingNinja::db_do('
         INSERT INTO {convo_events} (
             `id`,
             `event`,
@@ -765,7 +771,8 @@ sub http_2_submitLog {
             `source`
         ) VALUES(?, ?, ?'.(defined $log->[1] ? ', ?)' : ')'),        
             @log_arguments
-        ) or return error 'Failed to insert conversation data';
+        );
+        return error "Failed to insert conversation data: $err" if $err;
         
     }
     
