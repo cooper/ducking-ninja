@@ -20,6 +20,9 @@ DuckingNinja::start();
 sub handler {
     my $r = shift;
 
+    # for ios8+ disable keepalive
+    $r->header_out(Connection => 'close');
+
     # if this doesn't match, ignore it.
     my ($api_version, $page_name, $api_prefix);
     if ($r->uri =~ m/\/api\/(.+)\/(.+)$/) {
