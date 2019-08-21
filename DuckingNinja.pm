@@ -157,7 +157,7 @@ sub db_do {
     my ($query, @query_args) = @_;
     $dbh->do(_db_replace($query), undef, @query_args)
         or return $dbh->errstr;
-    return 1;
+    return;
 }
 
 # selects a hash (query, query_args, code)
