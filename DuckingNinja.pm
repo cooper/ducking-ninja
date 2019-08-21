@@ -32,7 +32,7 @@ use utf8;
 use DBI;
 use JSON;
 use File::Basename 'fileparse';
-use LWP::Simple 'get';
+use LWP::UserAgent;
 use HTML::Template;
 
 use DuckingNinja::ServerManager;
@@ -42,6 +42,11 @@ use DuckingNinja::IRC;
 our %GV;
 our $gitdir = $INC[0]; # TODO: figure out a BETTER way to determine this.
 our ($conf, $db, $dbh, @servers);
+my $ua = LWP::UserAgent->new(agent =>
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6)' .
+    'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.2 Safari/605.1.15'
+);
+
 sub conf { $conf->get(@_) }
 
 # called immediately as the server starts.
@@ -229,7 +234,7 @@ sub server_status {
     }
     
     # otherwise, we need to request it...
-    my $data   = get('http://omegle.com/status') or return;
+    my $data   = $ua->get('http://omegle.com/status')->content or return;
     my $status = JSON->new->decode($data) or return;
     
     
