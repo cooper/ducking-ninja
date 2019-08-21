@@ -169,7 +169,8 @@ sub http_2_servers {
         'UPDATE {servers} SET `index` = ? WHERE `name` = ?',
         $index_used,
         'last'
-    ) or return error 'Failed to set current server index';
+    );
+    return error "Failed to set current server index: $err" if $err;
     
     # success.
     
