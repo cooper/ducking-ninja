@@ -165,7 +165,7 @@ sub http_2_servers {
 ##### while (!$server_passed_ping)
     my $index_used = DuckingNinja::choose_server($last_index);
     
-    my $success = DuckingNinja::db_do(
+    my $err = DuckingNinja::db_do(
         'UPDATE {servers} SET `index` = ? WHERE `name` = ?',
         $index_used,
         'last'
